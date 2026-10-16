@@ -2,6 +2,12 @@
 
 Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 
+## v0.9.7 beta – 16 October 2026
+
+- **Check pages: designation and hours editable.** For each scanned page the compiler can type or correct the designation, normal hours and OT hours used on the cover page, e.g. when the scan has no QR and the person is not in the team list. Entered hours are marked * on the cover page with a note. Clear a box to go back to the automatic value.
+- A name not in the team list can be typed in Check pages, and **Check pages** is available for every scan.
+- The HQ list flags pages **without hours**.
+
 ## v0.9.6 beta – 16 October 2026
 
 - **Digital signature is opt-in** (Setup → Digital signature, off by default): the timesheet is normally signed by hand. When on, *Sign & signed copy* has **Sign this month**, **Remove from this month** and **Change or delete my signature** in one place.

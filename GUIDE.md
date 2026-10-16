@@ -1,6 +1,6 @@
 # Timesheet – User Guide
 
-For app version 0.9.6 (beta). **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
+For app version 0.9.7 (beta). **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
 
 The letterhead, project title and names in the screenshots are samples.
 
@@ -135,11 +135,13 @@ Set your role to **Compiler** or **RE** in Setup. **HQ submission** appears at t
 
 1. After the SOR has signed, scan the whole stack on the photocopier into one PDF and send it to your phone.
 2. **Add scan PDF** and pick it. The app reads the printed name on each page and matches it to the team list (pages turned sideways are fine). Pages it cannot read take the remaining names in print order. (Or **Scan pages** with the phone, one sheet after another.)
-3. Tap **Check pages**: each page shows a thumbnail, the name line as read, and a name picker. Correct any page, then **Save**.
+3. Tap **Check pages**: each page shows a thumbnail, the name line as read, the name, and the **designation, normal hours and OT hours** for the cover page. Correct any page, then **Save**.
+   - Hours come from the team list (QR collected in screen 1) or the summary QR on the page. If a box is empty (*No hours found*) or differs from the signed copy, type the figures from the signed copy. The cover page uses what you typed and marks those hours with **\***.
+   - A name not in the team list can be typed in. Clear a box to go back to the automatic value.
 4. Set the **timesheet month** and **compiled by**, keep **Cover page** ticked.
 5. **Preview** shows the cover page and every page; then **Make HQ PDF** and send it to HQ.
 
-<p><img src="guide/17_bundle.png" alt="Signed copies for HQ: the photocopier PDF, 3 pages read" width="260">&nbsp;<img src="guide/18_check_pages.png" alt="Check pages: each page with the name as read and a name picker" width="260"></p>
+<p><img src="guide/17_bundle.png" alt="Signed copies for HQ: the photocopier PDF, 3 pages read" width="260">&nbsp;<img src="guide/18_check_pages.png" alt="Check pages: each page with the name as read, the name, designation, normal and OT hours" width="260"></p>
 
 The cover page is generated digitally (no signature needed): the list of timesheets with designation, normal hours, OT, pages and page numbers, anyone still pending, and the app QR. Every page of the HQ PDF is numbered.
 

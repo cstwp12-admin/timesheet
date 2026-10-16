@@ -4,7 +4,7 @@ A web app for the monthly project timesheet. Each staff member keys in the month
 
 It works on iPhone, Android and laptop, in the browser, with nothing to install from an app store, and it keeps working without signal once opened. It can also be opened straight from a folder on a laptop (double-click `index.html`).
 
-**Developed by WPN.** Version 0.9.6 (beta, trial within the team). **New to the app?** Read the [user guide](GUIDE.md). Plan: [ROADMAP.md](ROADMAP.md).
+**Developed by WPN.** Version 0.9.7 (beta, trial within the team). **New to the app?** Read the [user guide](GUIDE.md). Plan: [ROADMAP.md](ROADMAP.md).
 
 <p><img src="screenshot-app.png" alt="The month on a phone: calendar with hours, RD, PH, AL and overtime" width="280"></p>
 
@@ -29,7 +29,7 @@ Filling in the timesheet spreadsheet at the end of the month needs a laptop. The
 | **Signature block** | As the original form by default; the RE's and SOR's names can print under their lines. Option: side by side (PYKP beside SOR) for more room for stamps. |
 | **Roles** | *Staff*, *Compiler* or *RE* (Setup). Staff see only their own timesheet; the compiler and RE also get HQ submission; only the RE can sign digitally under *Verified by PYKP*, with a PIN. |
 | **Digital signature** (optional, off by default) | The timesheet is normally signed by hand. If switched on in Setup: draw your signature or take a photo of it, protected by a PIN. **Sign** puts it on your timesheet; a drawn signature goes with your QR to the RE, who can sign the whole team in one go. A signature is dropped if the hours change after signing. Its position can be dragged and resized. The SOR still signs and stamps the hardcopy. |
-| **Scan matching** | No marks on the form: the app reads the printed name on each scanned page (offline text recognition) and matches it to the team list; pages it cannot read follow the print order; **Check pages** to confirm. Optional mark under the form, chosen on the Print / PDF screen: a **Summary QR** (about 13 mm: project, month, name, designation, normal and OT hours) or a 28 mm full data QR; none by default. |
+| **Scan matching** | No marks on the form: the app reads the printed name on each scanned page (offline text recognition) and matches it to the team list; pages it cannot read follow the print order; **Check pages** to confirm the name, and to type or correct the designation, normal and OT hours for the cover page (marked * when entered by the compiler). Optional mark under the form, chosen on the Print / PDF screen: a **Summary QR** (about 13 mm: project, month, name, designation, normal and OT hours) or a 28 mm full data QR; none by default. |
 | **HQ submission** | For the compiler. **1 · Team timesheets**: scan everyone's QR, preview, then print all the timesheets in one PDF for signature, or **one Excel workbook with a sheet per person**, or a summary CSV. **2 · Signed copies**: add the photocopier's scan PDF (or scan sheet by sheet); the names are read from the pages, **Check pages**, preview, then make **one PDF** with a digitally generated cover page (list of timesheets with hours and page numbers, app QR) and numbered pages. |
 | **Feedback** | *Send feedback on WhatsApp* with the app version and phone type filled in. Set a number in `packages/index.json` (`feedbackWhatsApp`) to send it straight to the app owner. |
 | **Works offline** | Once opened, it works without signal. |
@@ -120,6 +120,7 @@ Set `appUrl` in `packages/index.json` to the app's address so the HQ cover page 
 | `tests/test_app.py` | Automatic check: fills a sample month; checks totals, status undo, QR round trip, document scanner steps, PDF, Excel and HQ PDF |
 | `tests/test_id_mark.py` | Automatic check: the summary QR stays small (29 × 29 squares, about 13 mm) and its name, designation and hours are read from a noisy 200 dpi scan |
 | `tests/test_sign_scan.py` | Automatic check: PIN, roles, signature dropped when hours change, signatures in the QR, PDF and Excel; a simulated 200 dpi photocopier scan recognised page by page and the team list rebuilt from it |
+| `tests/test_cover_edit.py` | Automatic check: the compiler types designation and hours in Check pages; the cover page uses them, marked *; clearing a box restores the automatic value |
 | `GUIDE.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE.md` | User guide, trial plan, version history, licence |
 
 ## Important

@@ -475,7 +475,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
    on the device. Credit: fixed in the app, not taken from any package.
    ================================================================ */
 const APP_NAME = "Timesheet";
-const APP_VERSION = "0.9.6";
+const APP_VERSION = "0.9.7";
 const APP_STAGE = "beta";
 const APP_AUTHOR = "WPN";
 const APP_CREDIT = `${APP_NAME} app developed by ${APP_AUTHOR}`;
@@ -1135,16 +1135,22 @@ function teamFor(who, ym) {
   return team.find(t => normName(t.profile.name) === n && (!ym || t.month === ym)) || team.find(t => normName(t.profile.name) === n) || null;
 }
 const ymFromLabel = m => { const x = /^([A-Za-z]+)\s+(\d{4})$/.exec(String(m || "").trim()); if (!x) return ""; const i = MONTHS.findIndex(mm => mm.toLowerCase().startsWith(x[1].toLowerCase().slice(0, 3))); return i < 0 ? "" : `${x[2]}-${pad2(i + 1)}`; };
+/* designation and hours for a scanned page: the team timesheet in the app, else the summary QR on the page */
+function pageInfo(who, ym, info) {
+  const d = teamFor(who, ym); let hrs = "", ot = "", desig = "";
+  if (d) { const sh = teamSheet(d), t = totals(sh.md, sh.y, sh.m); hrs = fmt1(t.rowSum[0]); ot = fmt1(t.ot); desig = d.profile.status || ""; ym = ym || d.month; }
+  else if (info && info.hrs != null) { hrs = fmt1(info.hrs); ot = fmt1(info.ot || 0); desig = info.desig || ""; }
+  return { who: d ? d.profile.name : who, ym, hrs, ot, desig };
+}
 function bundleRows(items, coverPages) {
   let page = coverPages + 1; const rows = [];
   const mShort = ym => { if (!ym) return ""; const [y, m] = ym.split("-").map(Number); return `${MONTHS[m - 1].slice(0, 3)} ${y}`; };
+  const applyEdit = (r, ed) => { if (!ed) return; if (ed.desig != null) r.desig = ed.desig; if (ed.hrs != null) { r.hrs = fmt1(ed.hrs); r.edited = true; } if (ed.ot != null) { r.ot = fmt1(ed.ot); r.edited = true; } };
   const push = (who, ym, n, info) => {
-    const last = rows[rows.length - 1];
-    if (last && who && normName(last.who) === normName(who) && last.ym === ym && last.from + last.pages === page) { last.pages += n; page += n; return; }
-    const d = teamFor(who, ym); let hrs = "", ot = "", desig = "";
-    if (d) { const sh = teamSheet(d), t = totals(sh.md, sh.y, sh.m); hrs = fmt1(t.rowSum[0]); ot = fmt1(t.ot); desig = d.profile.status || ""; ym = ym || d.month; }
-    else if (info && info.hrs != null) { hrs = fmt1(info.hrs); ot = fmt1(info.ot || 0); desig = info.desig || ""; }
-    rows.push({ no: rows.length + 1, who: d ? d.profile.name : who, desig, ym, month: mShort(ym), hrs, ot, pages: n, from: page }); page += n;
+    const last = rows[rows.length - 1], ed = info && info.edit;
+    if (last && who && normName(last.who) === normName(who) && last.ym === ym && last.from + last.pages === page) { last.pages += n; page += n; applyEdit(last, ed); return; }
+    const p = pageInfo(who, ym, info), r = { no: rows.length + 1, who: p.who, desig: p.desig, ym: p.ym, month: mShort(p.ym), hrs: p.hrs, ot: p.ot, pages: n, from: page };
+    applyEdit(r, ed); rows.push(r); page += n;
   };
   items.forEach(it => {
     const n = it.pages || 1, ym0 = it.ym || ymFromLabel(it.month);
@@ -1190,7 +1196,7 @@ function coverOps(items) {
     const take = pgi === 0 ? COVER_ROWS_FIRST : COVER_ROWS_NEXT;
     for (let k = 0; k < take && idx < rows.length; k++, idx++) {
       const r = rows[idx]; x = M;
-      [r.no, r.who || "—", r.desig, r.month || claim.replace(/^([A-Za-z]{3})[a-z]*/, "$1"), r.hrs || "—", r.ot || "—", r.pages, r.from].forEach((v, ci) => { const [, w, a] = cols[ci]; T(v, a === "right" ? x + w - 5 : x + 5, y + 12.5, 8.5, ci === 1 ? 1 : 0, "14212B", a, w - 8); x += w; });
+      [r.no, r.who || "—", r.desig, r.month || claim.replace(/^([A-Za-z]{3})[a-z]*/, "$1"), r.hrs ? r.hrs + (r.edited ? "*" : "") : "—", r.ot ? r.ot + (r.edited ? "*" : "") : "—", r.pages, r.from].forEach((v, ci) => { const [, w, a] = cols[ci]; T(v, a === "right" ? x + w - 5 : x + 5, y + 12.5, 8.5, ci === 1 ? 1 : 0, "14212B", a, w - 8); x += w; });
       ops.push({ k: "line", x1: M, y1: y + 18, x2: W - M, y2: y + 18, w: 0.4, color: "C9D1D7" }); y += 18;
     }
     if (idx >= rows.length) {
@@ -1200,7 +1206,7 @@ function coverOps(items) {
       T(sumH ? fmt1(sumH) : "—", x + 46 - 5, y + 13, 8.5, 1, "14212B", "right"); T(sumO ? fmt1(sumO) : "—", x + 46 + 38 - 5, y + 13, 8.5, 1, "14212B", "right");
       T(rows.reduce((a, r) => a + r.pages, 0), x + 46 + 38 + 35 - 5, y + 13, 8.5, 1, "14212B", "right");
       y += 19;
-      T("Hours are from the team timesheets in the app where the name matches. The signed copies attached are the record.", M, y + 14, 7.5, 0, "596873", "left", CW);
+      T(`Hours are from the team timesheets in the app or the summary QR on the page${rows.some(r => r.edited) ? "; * entered by the compiler from the signed copy" : ""}. The signed copies attached are the record.`, M, y + 14, 7.5, 0, "596873", "left", CW);
       const miss = missingFromScans(items);
       if (miss.length) T(`Pending, not in this submission: ${miss.map(d => d.profile.name).join(", ")}`, M, y + 28, 8, 1, "9A5B00", "left", CW);
     }
@@ -2330,6 +2336,18 @@ async function analysePages(blob, type) {
   if (ocrErr) toast(ocrErr + ". Pages were matched in print order: please check them.");
   return out;
 }
+/* designation / normal hrs / OT boxes for one page in Check pages */
+function pcFields(k, l) {
+  const a = l && l.who ? pageInfo(l.who, l.ym, l) : { desig: "", hrs: "", ot: "" }, ed = (l && l.edit) || {};
+  const val = (f, auto) => ed[f] != null ? (f === "desig" ? ed[f] : fmt1(ed[f])) : auto;
+  const miss = l && l.who && !a.hrs && ed.hrs == null;
+  return `<div data-pcf="${k}" style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+    <label class="small muted" style="display:grid;gap:2px;grid-column:1/-1">Designation<input type="text" data-f="desig" data-auto="${esc(a.desig)}" value="${esc(val("desig", a.desig))}" placeholder="Designation"></label>
+    <label class="small muted" style="display:grid;gap:2px">Normal hours<input type="text" inputmode="decimal" data-f="hrs" data-auto="${esc(a.hrs)}" value="${esc(val("hrs", a.hrs))}" placeholder="hrs"></label>
+    <label class="small muted" style="display:grid;gap:2px">OT hours<input type="text" inputmode="decimal" data-f="ot" data-auto="${esc(a.ot)}" value="${esc(val("ot", a.ot))}" placeholder="hrs"></label>
+    ${ed.hrs != null || ed.ot != null || ed.desig != null ? `<span class="small" style="grid-column:1/-1;color:var(--accent)">Entered by you (marked * on the cover page)</span>` : `<span class="small" data-pch style="grid-column:1/-1;color:var(--warn)">${miss ? "No hours found: type them from the signed copy" : ""}</span>`}
+  </div>`;
+}
 async function openPageCheck(id) {
   const it = await DB.get(id); if (!it) return;
   const names = team.map(d => d.profile.name), labels = it.labels || [], thumbs = it.thumbs || [], crops = it.crops || [];
@@ -2339,10 +2357,31 @@ async function openPageCheck(id) {
       <img src="${thumbs[k] || ""}" alt="" style="width:72px;border:1px solid var(--line);border-radius:4px;background:#fff">
       <div style="display:grid;gap:5px;min-width:0"><b class="small">Page ${k + 1} <span class="tag ${l.via === "qr" || l.via === "name" ? "ok" : "need"}">${VIA[l.via] || "not recognised"}</span></b>
         ${crops[k] ? `<img src="${crops[k]}" alt="Name as read" style="width:100%;border:1px solid var(--line);border-radius:4px">` : ""}
-        <select data-pk="${k}"><option value="">— not a team timesheet / unknown —</option>${names.map(n => `<option ${normName(n) === normName(l.who || "") ? "selected" : ""}>${esc(n)}</option>`).join("")}${l.who && !names.some(n => normName(n) === normName(l.who)) ? `<option selected>${esc(l.who)}</option>` : ""}</select></div></div>`; }).join("")}</div>
+        <input type="text" data-pk="${k}" value="${esc(l.who || "")}" placeholder="Name (blank: not a timesheet)" list="team-names" aria-label="Name on page ${k + 1}">
+        ${pcFields(k, l)}</div></div>`; }).join("")}</div>
+    <p class="small muted" style="margin:4px 0 0">Designation and hours come from the team list or the summary QR. If they are missing or differ from the signed copy, type them in: the cover page uses what you enter and marks the hours with *. Clear a box to go back to the automatic value.</p>
     <button class="btn acc" type="button" id="pc-save">Save</button>`);
+  // a new name fills the boxes it has not been typed in (the boxes are updated in place, so a tap on them is not lost)
+  $("#gen-body").onchange = e => {
+    const inp = e.target.closest("input[data-pk]"); if (!inp) return;
+    const k = Number(inp.dataset.pk), box = $(`#gen-body [data-pcf="${k}"]`), who = inp.value.trim(); if (!box) return;
+    const d = teamFor(who), l = labels[k] || {}, a = who ? pageInfo(d ? d.profile.name : who, d ? d.month : l.ym, normName(l.who || "") === normName(who) ? l : {}) : { desig: "", hrs: "", ot: "" };
+    ["desig", "hrs", "ot"].forEach(f => { const el = box.querySelector(`[data-f="${f}"]`); if (el && (el.value === "" || el.value === el.dataset.auto)) el.value = a[f]; if (el) el.dataset.auto = a[f]; });
+    const hint = box.querySelector("[data-pch]"); if (hint) hint.textContent = who && !box.querySelector('[data-f="hrs"]').value ? "No hours found: type them from the signed copy" : "";
+  };
   $("#pc-save").onclick = async () => {
-    $$("#gen-body select[data-pk]").forEach(sel => { const k = Number(sel.dataset.pk), who = sel.value, d = teamFor(who); labels[k] = who ? Object.assign({}, labels[k] || {}, { who, ym: d ? d.month : (labels[k] || {}).ym || "", via: (labels[k] || {}).who === who ? (labels[k] || {}).via : "checked" }) : null; if (labels[k] && labels[k].via !== "qr" && labels[k].via !== "name") labels[k].via = "checked"; });
+    $$("#gen-body input[data-pk]").forEach(inp => {
+      const k = Number(inp.dataset.pk), typed = inp.value.trim(), d = teamFor(typed), who = d ? d.profile.name : typed, old = labels[k] || {};
+      labels[k] = who ? Object.assign({}, old, { who, ym: d ? d.month : old.ym || "", via: normName(old.who || "") === normName(who) ? old.via : "checked" }) : null;
+      if (!labels[k]) return;
+      if (labels[k].via !== "qr" && labels[k].via !== "name") labels[k].via = "checked";
+      const auto = pageInfo(labels[k].who, labels[k].ym, labels[k]), v = f => ($(`#gen-body [data-pcf="${k}"] [data-f="${f}"]`) || {}).value, num = x => { const n = parseFloat(String(x || "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 10) / 10 : null; };
+      const ed = {}, dg = (v("desig") || "").trim(), h = num(v("hrs")), o = num(v("ot"));
+      if (dg && dg !== auto.desig) ed.desig = dg;
+      if (h != null && fmt1(h) !== auto.hrs) ed.hrs = h;
+      if (o != null && fmt1(o) !== auto.ot) ed.ot = o;
+      if (Object.keys(ed).length) labels[k].edit = ed; else delete labels[k].edit;
+    });
     it.labels = labels; await DB.put(it); closeSheet("#sh-gen"); renderHQ(); toast("Pages saved.");
   };
 }
@@ -2427,8 +2466,8 @@ async function renderHQ() {
       <div style="display:grid;gap:5px;min-width:0">${it.pages > 1 && (it.labels || []).some(Boolean) ? `<b style="font-size:14.5px">${esc(it.name)}</b>` : `<input type="text" value="${esc(it.who)}" placeholder="Name" data-bmeta="${it.id}|who" aria-label="Name" list="team-names">
       <input type="text" value="${esc(it.month)}" placeholder="Month, e.g. September 2026" data-bmeta="${it.id}|month" aria-label="Month">`}
       <span class="small muted">${i + 1}. ${it.type === "application/pdf" ? `PDF, ${it.pages} page${it.pages > 1 ? "s" : ""}` : "Scan"}${(it.labels || []).length ? ` · ${it.labels.filter(Boolean).length} recognised` : ""}</span>
-      ${(it.labels || []).length ? `<span class="small">${(() => { const L = it.labels, c = v => L.filter(l => l && l.via === v).length, n = L.filter(l => !l || !l.who).length; return [c("qr") + c("name") ? `<span class="tag ok">${c("qr") + c("name")} read</span>` : "", c("checked") ? `<span class="tag ok">${c("checked")} checked</span>` : "", c("order") + c("unsure") ? `<span class="tag need">${c("order") + c("unsure")} to check</span>` : "", n ? `<span class="tag need">${n} unknown</span>` : ""].join(" "); })()}</span>
-      <button class="btn sm" type="button" data-pcheck="${it.id}" style="justify-self:start">Check pages</button>` : ""}</div>
+      ${(it.labels || []).length ? `<span class="small">${(() => { const L = it.labels, c = v => L.filter(l => l && l.via === v).length, n = L.filter(l => !l || !l.who).length; return [c("qr") + c("name") ? `<span class="tag ok">${c("qr") + c("name")} read</span>` : "", c("checked") ? `<span class="tag ok">${c("checked")} checked</span>` : "", c("order") + c("unsure") ? `<span class="tag need">${c("order") + c("unsure")} to check</span>` : "", n ? `<span class="tag need">${n} unknown</span>` : "", (() => { const nh = L.filter(l => l && l.who && !pageInfo(l.who, l.ym, l).hrs && !(l.edit && l.edit.hrs != null)).length; return nh ? `<span class="tag need">${nh} without hours</span>` : ""; })()].join(" "); })()}</span>` : ""}
+      <button class="btn sm" type="button" data-pcheck="${it.id}" style="justify-self:start">Check pages</button></div>
       <div class="ctl"><button type="button" data-bmove="${it.id}|-1" aria-label="Move up">▲</button><button type="button" data-bmove="${it.id}|1" aria-label="Move down">▼</button>
       ${it.type.startsWith("image/") ? `<button type="button" data-brot="${it.id}" aria-label="Rotate">⟳</button>` : ""}<button type="button" data-bdel="${it.id}" aria-label="Remove">✕</button></div></div>`;
   }
@@ -2457,7 +2496,7 @@ async function renderHQ() {
    ================================================================ */
 function openSheet(id) { $(id).hidden = false; document.body.style.overflow = "hidden"; }
 function closeSheet(id) { $(id).hidden = true; if (!$$(".sheet:not([hidden])").length && $("#cam").hidden) document.body.style.overflow = ""; }
-function genSheet(title, sub, html) { $("#gen-title").firstChild.textContent = title; $("#gen-sub").textContent = sub || ""; $("#gen-body").innerHTML = html; openSheet("#sh-gen"); }
+function genSheet(title, sub, html) { $("#gen-title").firstChild.textContent = title; $("#gen-sub").textContent = sub || ""; $("#gen-body").innerHTML = html; $("#gen-body").onchange = null; openSheet("#sh-gen"); }
 let toastT = 0;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
 
