@@ -2,6 +2,15 @@
 
 Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 
+## v0.9.8 beta – 17 October 2026
+
+- **QR covering on real copier scans**: when the QR on a rough photocopy cannot be read, the app now finds it by its look (a dense square block below the form), reads it again from a sharper render where possible, and blanks it. A stamp or text is not taken for a QR. **Check pages** shows *Cover QR (QR found)* per page, with a tick to blank the usual QR corner on a page where none was found.
+- **HQ PDF: Share, Save or Open** (also in the preview). The HQ list stays on the phone until cleared.
+- **Delete data**: *Delete* on a month in **Records**; **Setup → Delete data on this phone** to start again (with *Save a backup first*).
+- **Update notice**: a green bar *New version … is ready → Update now* when the site has a newer version (`version.json`); *What's new* shows once after an update.
+- **Help** at the top right: user guide and change list on GitHub, what's new, month-end steps, feedback. Footer links too.
+- **Month switcher** above the calendar. Header: small calendar mark, icon buttons *Help · Records · Setup*.
+
 ## v0.9.7 beta – 16 October 2026
 
 - **Check pages: designation and hours editable.** For each scanned page the compiler can type or correct the designation, normal hours and OT hours used on the cover page, e.g. when the scan has no QR and the person is not in the team list. Entered hours are marked * on the cover page with a note. Clear a box to go back to the automatic value.

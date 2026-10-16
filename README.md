@@ -4,7 +4,7 @@ A web app for the monthly project timesheet. Each staff member keys in the month
 
 It works on iPhone, Android and laptop, in the browser, with nothing to install from an app store, and it keeps working without signal once opened. It can also be opened straight from a folder on a laptop (double-click `index.html`).
 
-**Developed by WPN.** Version 0.9.7 (beta, trial within the team). **New to the app?** Read the [user guide](GUIDE.md). Plan: [ROADMAP.md](ROADMAP.md).
+**Developed by WPN.** Version 0.9.8 (beta, trial within the team). **New to the app?** Read the [user guide](GUIDE.md). Plan: [ROADMAP.md](ROADMAP.md).
 
 <p><img src="screenshot-app.png" alt="The month on a phone: calendar with hours, RD, PH, AL and overtime" width="280"></p>
 
@@ -32,6 +32,8 @@ Filling in the timesheet spreadsheet at the end of the month needs a laptop. The
 | **Scan matching** | No marks on the form: the app reads the printed name on each scanned page (offline text recognition) and matches it to the team list; pages it cannot read follow the print order; **Check pages** to confirm the name, and to type or correct the designation, normal and OT hours for the cover page (marked * when entered by the compiler). Optional mark under the form, chosen on the Print / PDF screen: a **Summary QR** (about 13 mm: project, month, name, designation, normal and OT hours) or a 28 mm full data QR; none by default. |
 | **HQ submission** | For the compiler. **1 · Team timesheets**: scan everyone's QR, preview, then print all the timesheets in one PDF for signature, or **one Excel workbook with a sheet per person**, or a summary CSV. **2 · Signed copies**: add the photocopier's scan PDF (or scan sheet by sheet); the names are read from the pages, **Check pages**, preview, then make **one PDF** with a digitally generated cover page (list of timesheets with hours and page numbers, app QR) and numbered pages (optional). Scanned pages are turned upright and landscape automatically (adjust in **Check pages**; the cover stays portrait), and the QR codes on the scans can be covered once read. |
 | **Feedback** | *Send feedback on WhatsApp* with the app version and phone type filled in. Set a number in `packages/index.json` (`feedbackWhatsApp`) to send it straight to the app owner. |
+| **Help and updates** | **Help** (top right) opens the user guide and change list on GitHub, what's new and feedback. When `version.json` on the site names a newer version, a bar offers **Update now**; *What's new* shows once after an update. The guide links work out the GitHub address from the app's address, or from `repoUrl` in `packages/index.json`. |
+| **Delete data** | Delete a month in **Records**; **Setup → Delete data on this phone** to start again. |
 | **Works offline** | Once opened, it works without signal. |
 
 ## Getting started
@@ -49,7 +51,7 @@ Filling in the timesheet spreadsheet at the end of the month needs a laptop. The
 3. Sign, and get the verifying signatures.
 4. **Scan signed copy**.
 5. Hand in the hardcopy, and **Show QR** to the compiler if asked.
-6. The compiler: **HQ submission** → **Scan team QR** for everyone → (only with digital signature on, RE: **Sign all as RE**) → **Print all** → stamps and signatures by hand, SOR last → scan the stack on the photocopier → **Add scan PDF** → **Preview** → **Make HQ PDF** → send to HQ. Mark the month *Sent to HQ*.
+6. The compiler: **HQ submission** → **Scan team QR** for everyone → (only with digital signature on, RE: **Sign all as RE**) → **Print all** → stamps and signatures by hand, SOR last → scan the stack on the photocopier → **Add scan PDF** → **Check pages** → **Preview** → **Share HQ PDF** or **Save** → send to HQ. Mark the month *Sent to HQ*.
 
 ## Projects
 
@@ -102,7 +104,7 @@ Set `appUrl` in `packages/index.json` to the app's address so the HQ cover page 
 1. Create a repository (a neutral name such as `timesheet`) and upload everything in this folder, keeping the folders (`lib/`, `packages/`, `holidays/`, `templates/`).
 2. **Settings → Pages → Deploy from a branch → main / (root)**.
 3. The app is at `https://<account>.github.io/<repository>/`.
-4. After changing files, bump the version in `sw.js` (`const C = "ts-v…"`) so phones fetch the new files.
+4. After changing files, bump the version in three places together: `APP_BUILD` in `index.html`, `build` in `version.json` and the cache name in `sw.js` (`const C = "ts-v…"`). Phones then show *New version ready*. (`tests/test_qr_rough.py` checks they match.)
 
 ## Files
 
@@ -115,11 +117,13 @@ Set `appUrl` in `packages/index.json` to the app's address so the HQ cover page 
 | `templates/` | The blank official form, its print layout and header image (made by `tools/build_template.py`) |
 | `lib/` | jsPDF (PDF), JSZip (Excel), pdf-lib (HQ PDF), pdf.js (reading scanned PDFs), Tesseract.js in `lib/tesseract/` (reading the printed names, about 11 MB, loaded only when a scan is added), qrcode-generator (QR codes), jsQR (reading QR codes where the phone has no built-in reader) |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png` | Home-screen install and offline use |
+| `version.json` | The latest version on the site: the app shows *New version ready* when it is newer than the copy on the phone |
 | `tools/` | `build_template.py` and `build_data.py`; `make_guide_shots.py` makes the screenshots in `guide/` |
 | `guide/` | Screenshots for the user guide (sample names and letterhead) |
 | `tests/test_app.py` | Automatic check: fills a sample month; checks totals, status undo, QR round trip, document scanner steps, PDF, Excel and HQ PDF |
 | `tests/test_id_mark.py` | Automatic check: the summary QR stays small (29 × 29 squares, about 13 mm) and its name, designation and hours are read from a noisy 200 dpi scan |
 | `tests/test_sign_scan.py` | Automatic check: PIN, roles, signature dropped when hours change, signatures in the QR, PDF and Excel; a simulated 200 dpi photocopier scan recognised page by page and the team list rebuilt from it |
+| `tests/test_qr_rough.py` | Automatic check: a rough black-and-white copier scan where the QR may not decode: the QR is still found and blanked, a stamp is left alone; version numbers in `index.html`, `version.json` and `sw.js` match |
 | `tests/test_hq_pages.py` | Automatic check: a photocopier scan with pages turned both ways becomes a portrait cover plus upright landscape timesheets; QR codes covered; footer only when ticked |
 | `tests/test_color_fill.py` | Automatic check: colour fill off by default; on, the right columns are tinted in the PDF, preview and Excel (borders kept), text stays black |
 | `tests/test_cover_edit.py` | Automatic check: the compiler types designation and hours in Check pages; the cover page uses them, marked *; clearing a box restores the automatic value |

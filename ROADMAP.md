@@ -1,6 +1,6 @@
 # Roadmap
 
-**Now: v0.9.7 beta.** A trial within the project team. The app is feature-complete for what it is meant to do:
+**Now: v0.9.8 beta.** A trial within the project team. The app is feature-complete for what it is meant to do:
 
 1. Key in the month on the phone.
 2. Print the official form for hand signature.

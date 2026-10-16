@@ -1,6 +1,6 @@
 # Timesheet – User Guide
 
-For app version 0.9.7 (beta). **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
+For app version 0.9.8 (beta). In the app, **Help** (top right) opens this guide and what's new. **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
 
 The letterhead, project title and names in the screenshots are samples.
 
@@ -15,6 +15,8 @@ The letterhead, project title and names in the screenshots are samples.
 5. Hand in the hardcopy, and **Show QR** to the compiler if asked.
 
 The strip near the top of the screen (**Fill · Print · Sign · Submit**) shows where you are; tap a step to go to it.
+
+At the top right: **Help** (this guide, what's new, feedback), **Records** and **Setup**.
 
 ## 1. Install and first start
 
@@ -38,7 +40,7 @@ Check the project code at the top left. Tap it to change to another project. **T
 
 ## 2. Key in the month
 
-1. Use **‹ ›** in Timesheet details to pick the month.
+1. Use **‹ ›** next to the month above the calendar to pick the month.
 2. Tap **Fill month**: working days get the normal hours (8.0), Sundays **RD**, public holidays **PH**.
 
 <p><img src="guide/02_new_month.png" alt="A new month, not started" width="260">&nbsp;<img src="guide/03_filled.png" alt="The month after Fill month: 8.0, RD and PH" width="260"></p>
@@ -105,7 +107,7 @@ On **Print / PDF**, tap **Show QR**. The compiler scans it with their phone (no 
 
 ## 6. Records and Setup
 
-**Records** (top right) lists your months with their status and scans; **Open month** goes to it.
+**Records** (top right) lists your months with their status and scans; **Open month** goes to it, **Delete** removes that month and its scans from the phone.
 
 **Setup** (top right):
 
@@ -116,6 +118,7 @@ On **Print / PDF**, tap **Show QR**. The compiler scans it with their phone (no 
 - **Project**: the project title on the form, normal hours per day, rest days.
 - **Public holidays**: the year's list; remove one, or add a declared special or replacement holiday.
 - **Backup**: save your timesheets to a file and restore them on a new phone (scans are not in the backup).
+- **Delete data on this phone**: *Delete everything and start again* clears all months, scans, lists, your signature and settings (save a backup first).
 - **Share the app**: QR code and link. **About**: version and credit.
 
 <p><img src="guide/13_records.png" alt="Records: September with its status and scan" width="260">&nbsp;<img src="guide/14_setup.png" alt="Setup: feedback, role, digital signature, signature block, project" width="260"></p>
@@ -145,8 +148,8 @@ Set your role to **Compiler** or **RE** in Setup. **HQ submission** appears at t
 4. Set the **timesheet month** and **compiled by**. The ticks below:
    - **Cover page** (on): the list of timesheets with page numbers and the app QR.
    - **Page numbers at the foot of each page** (on): e.g. *Timesheets September 2026 · Page 1 of 12* after the project code. Untick to leave the pages without it.
-   - **Cover the QR codes on the scanned pages** (on): once their data has been read, the QR under each form (and the small text beside the full QR) is covered with white in the HQ PDF. The photocopier file itself is not changed.
-5. **Preview** shows the cover page and every page; then **Make HQ PDF** and send it to HQ.
+   - **Cover the QR codes on the scanned pages** (on): the QR under each form (and the small text beside the full QR) is covered with white in the HQ PDF. The app finds the QR even on a rough photocopy where it cannot be read. In **Check pages**, each page shows *Cover QR* with *(QR found)*; if a QR was missed, tick *Cover QR* on that page to blank the usual QR corner. The photocopier file itself is not changed.
+5. **Preview** shows the cover page and every page, as they will be. Then **Share HQ PDF** (WhatsApp, e-mail), **Save** (to your downloads) or **Open**. The list stays on the phone until you tap **Clear list**.
 
 <p><img src="guide/17_bundle.png" alt="Signed copies for HQ: the photocopier PDF, 3 pages read" width="260">&nbsp;<img src="guide/18_check_pages.png" alt="Check pages: each page with the name as read, the name, designation, normal and OT hours" width="260"></p>
 
@@ -158,7 +161,7 @@ The cover page is generated digitally (no signature needed): the list of timeshe
 
 - **Nothing is uploaded.** Timesheets and scans stay on your phone. Back up now and then (Setup → Backup).
 - **Works offline** after the first opening with signal.
-- **Updates:** open the app with signal; it picks up the new version by itself. If something looks old, close and reopen it.
+- **Updates:** when a new version is out, a green bar says *New version … is ready*; tap **Update now**. After an update, *What's new* shows once. If something looks old, close and reopen the app with signal.
 - **Camera and name reading** need the app opened from its web link (not from a file on a laptop).
 - **A wrong public holiday?** Change it in Setup → Public holidays and send feedback so the list is corrected for everyone.
-- **Problems or ideas:** Setup → **Send feedback on WhatsApp**.
+- **Problems or ideas:** **Help** → **Send feedback**.
