@@ -1,0 +1,953 @@
+{
+ "source": "company timesheet form",
+ "cols": [
+  26.25,
+  29.25,
+  26.25,
+  26.25,
+  26.25,
+  28.5,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  26.25,
+  52.5,
+  47.25
+ ],
+ "rows": [
+  10.5,
+  10.5,
+  10.5,
+  10.5,
+  10.5,
+  10.5,
+  12.45,
+  10.5,
+  10.5,
+  10.5,
+  10.5,
+  29.95,
+  15.05,
+  10.5,
+  13.1,
+  47.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  11.8,
+  10.5,
+  11.8,
+  10.5
+ ],
+ "merged": [
+  "A12:AK12"
+ ],
+ "page": {
+  "paper": "A4",
+  "orientation": "landscape",
+  "scale": 0.72,
+  "margins": {
+   "l": 17.007874015748033,
+   "r": 17.007874015748033,
+   "t": 53.85826771653544,
+   "b": 53.85826771653544
+  },
+  "hCenter": true
+ },
+ "lines": [
+  [
+   0.0,
+   172.95,
+   1023.75,
+   172.95
+  ],
+  [
+   0.0,
+   526.25,
+   1023.75,
+   526.25
+  ],
+  [
+   0.0,
+   269.25,
+   1023.75,
+   269.25
+  ],
+  [
+   0.0,
+   233.85,
+   1023.75,
+   233.85
+  ],
+  [
+   0.0,
+   245.65,
+   1023.75,
+   245.65
+  ],
+  [
+   0.0,
+   257.45,
+   1023.75,
+   257.45
+  ],
+  [
+   0.0,
+   316.45,
+   1023.75,
+   316.45
+  ],
+  [
+   0.0,
+   281.05,
+   1023.75,
+   281.05
+  ],
+  [
+   0.0,
+   304.65,
+   1023.75,
+   304.65
+  ],
+  [
+   0.0,
+   292.85,
+   1023.75,
+   292.85
+  ],
+  [
+   0.0,
+   186.05,
+   1023.75,
+   186.05
+  ],
+  [
+   0.0,
+   328.25,
+   582.75,
+   328.25
+  ],
+  [
+   1023.75,
+   172.95,
+   1023.75,
+   304.65
+  ],
+  [
+   1023.75,
+   316.45,
+   1023.75,
+   526.25
+  ],
+  [
+   189.0,
+   186.05,
+   189.0,
+   292.85
+  ],
+  [
+   320.25,
+   186.05,
+   320.25,
+   292.85
+  ],
+  [
+   108.0,
+   186.05,
+   108.0,
+   292.85
+  ],
+  [
+   0.0,
+   172.95,
+   0.0,
+   304.65
+  ],
+  [
+   0.0,
+   316.45,
+   0.0,
+   526.25
+  ],
+  [
+   582.75,
+   186.05,
+   582.75,
+   292.85
+  ],
+  [
+   582.75,
+   316.45,
+   582.75,
+   526.25
+  ],
+  [
+   134.25,
+   186.05,
+   134.25,
+   292.85
+  ],
+  [
+   372.75,
+   186.05,
+   372.75,
+   292.85
+  ],
+  [
+   372.75,
+   316.45,
+   372.75,
+   526.25
+  ],
+  [
+   609.0,
+   186.05,
+   609.0,
+   292.85
+  ],
+  [
+   81.75,
+   186.05,
+   81.75,
+   292.85
+  ],
+  [
+   451.5,
+   186.05,
+   451.5,
+   292.85
+  ],
+  [
+   162.75,
+   186.05,
+   162.75,
+   292.85
+  ],
+  [
+   162.75,
+   316.45,
+   162.75,
+   526.25
+  ],
+  [
+   294.0,
+   186.05,
+   294.0,
+   292.85
+  ],
+  [
+   55.5,
+   186.05,
+   55.5,
+   292.85
+  ],
+  [
+   976.5,
+   186.05,
+   976.5,
+   304.65
+  ],
+  [
+   267.75,
+   186.05,
+   267.75,
+   292.85
+  ],
+  [
+   504.0,
+   186.05,
+   504.0,
+   292.85
+  ],
+  [
+   399.0,
+   186.05,
+   399.0,
+   292.85
+  ],
+  [
+   792.75,
+   186.05,
+   792.75,
+   292.85
+  ],
+  [
+   897.75,
+   186.05,
+   897.75,
+   292.85
+  ],
+  [
+   845.25,
+   186.05,
+   845.25,
+   292.85
+  ],
+  [
+   687.75,
+   186.05,
+   687.75,
+   292.85
+  ],
+  [
+   714.0,
+   186.05,
+   714.0,
+   292.85
+  ],
+  [
+   241.5,
+   186.05,
+   241.5,
+   292.85
+  ],
+  [
+   635.25,
+   186.05,
+   635.25,
+   292.85
+  ],
+  [
+   819.0,
+   186.05,
+   819.0,
+   292.85
+  ],
+  [
+   871.5,
+   186.05,
+   871.5,
+   292.85
+  ],
+  [
+   556.5,
+   186.05,
+   556.5,
+   292.85
+  ],
+  [
+   530.25,
+   186.05,
+   530.25,
+   292.85
+  ],
+  [
+   477.75,
+   186.05,
+   477.75,
+   292.85
+  ],
+  [
+   425.25,
+   186.05,
+   425.25,
+   292.85
+  ],
+  [
+   346.5,
+   186.05,
+   346.5,
+   292.85
+  ],
+  [
+   661.5,
+   186.05,
+   661.5,
+   292.85
+  ],
+  [
+   924.0,
+   186.05,
+   924.0,
+   304.65
+  ],
+  [
+   766.5,
+   186.05,
+   766.5,
+   292.85
+  ],
+  [
+   740.25,
+   186.05,
+   740.25,
+   292.85
+  ],
+  [
+   215.25,
+   186.05,
+   215.25,
+   292.85
+  ],
+  [
+   26.25,
+   186.05,
+   26.25,
+   292.85
+  ]
+ ],
+ "texts": [
+  {
+   "c": "R13",
+   "t": "TIME SHEET",
+   "num": false,
+   "sz": 12.0,
+   "b": true,
+   "u": true,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "M15",
+   "t": "Code No: ",
+   "num": false,
+   "sz": 10.0,
+   "b": true,
+   "u": false,
+   "color": "FF0000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "T15",
+   "t": "Status:",
+   "num": false,
+   "sz": 10.0,
+   "b": true,
+   "u": false,
+   "color": "FF0000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A16",
+   "t": "NO",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "B16",
+   "t": "Stage Code ",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": true,
+   "rot": 0
+  },
+  {
+   "c": "C16",
+   "t": "Time Code",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": true,
+   "rot": 0
+  },
+  {
+   "c": "D16",
+   "t": "0",
+   "num": true,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "AJ16",
+   "t": "Total Hour",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 90
+  },
+  {
+   "c": "AK16",
+   "t": "Remarks",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "C17",
+   "t": "1",
+   "num": true,
+   "sz": 8.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "C18",
+   "t": "2",
+   "num": true,
+   "sz": 8.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "C19",
+   "t": "3",
+   "num": true,
+   "sz": 8.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "C20",
+   "t": "4",
+   "num": true,
+   "sz": 8.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "C21",
+   "t": "5",
+   "num": true,
+   "sz": 8.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "center",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A24",
+   "t": "LEAVE CODE:",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H24",
+   "t": "TIME CODE:",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "Q24",
+   "t": "STAGE CODE:",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A28",
+   "t": "ANNUAL LEAVE",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H28",
+   "t": "1  - NORMAL",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P28",
+   "t": "A - PROJECT MANAGEMENT",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A29",
+   "t": "EMERGENCY LEAVE",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H29",
+   "t": "2 - O/T ON WORK DAY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P29",
+   "t": "B - PRELIMINARY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A30",
+   "t": "MEDICAL LEAVE",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H30",
+   "t": "3 - O/T ON REST DAY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P30",
+   "t": "C - DESIGN",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A31",
+   "t": "REST DAY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H31",
+   "t": "4 - O/T ON PUBLIC HOLIDAY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P31",
+   "t": "D - CONTRACT DOCUMENT",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A32",
+   "t": "PUBLIC HOLIDAY",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "H32",
+   "t": "5 - O/T AFTER MIDNIGHT",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P32",
+   "t": "E - ADMIN OF CONTRACT",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "A33",
+   "t": "PERINTAH KAWALAN PERGERAKAN",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P33",
+   "t": "F - SITE SUPERVISION",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  },
+  {
+   "c": "P34",
+   "t": "G - AMENDMENTS",
+   "num": false,
+   "sz": 9.0,
+   "b": false,
+   "u": false,
+   "color": "000000",
+   "h": "general",
+   "v": "bottom",
+   "wrap": false,
+   "rot": 0
+  }
+ ],
+ "images": [
+  {
+   "x": 225.48,
+   "y": 26.45,
+   "w": 67.48,
+   "h": 74.34,
+   "src": "templates/logo.jpeg"
+  }
+ ],
+ "shapes": [
+  {
+   "x": 297.43,
+   "y": 34.93,
+   "w": 517.14,
+   "h": 69.92,
+   "paras": [
+    [
+     {
+      "t": "PY KONSEP PERUNDING SDN BHD",
+      "sz": 28.0,
+      "b": true,
+      "color": "17365D"
+     },
+     {
+      "t": ".(198601001021",
+      "sz": 8.0,
+      "b": true,
+      "color": "17365D"
+     }
+    ],
+    [
+     {
+      "t": "CIVIL/STRUCTURAL/GEOTECHNICAL/TRAFFIC CONSULTING ENGINEERS",
+      "sz": 11.0,
+      "b": false,
+      "color": "000000"
+     }
+    ],
+    [],
+    []
+   ],
+   "inset": [
+    7.2,
+    3.6
+   ]
+  }
+ ],
+ "styles": {
+  "nameBold": 50,
+  "name": 51,
+  "signBold": 52,
+  "title": 49,
+  "label": 2,
+  "value": 44,
+  "month": 25,
+  "year": 3,
+  "dayHead": 6,
+  "dayHeadBold": 45,
+  "stage": 8,
+  "num": 9,
+  "code": 39,
+  "remark": 7,
+  "sign": 16
+ }
+}

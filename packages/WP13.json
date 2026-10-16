@@ -1,0 +1,27 @@
+{
+ "kind": "ts-package",
+ "version": 1,
+ "company": "PY KONSEP PERUNDING SDN BHD",
+ "companyShort": "PYKP",
+ "template": "templates/form.xlsx",
+ "layout": "templates/form.layout.json",
+ "holidays": "holidays/SABAH.json",
+ "restDays": [
+  0
+ ],
+ "normalHours": 8,
+ "codeNo": "F",
+ "stageCode": "F",
+ "signLabels": {
+  "employee": "SIGNATURE",
+  "verify1": "VERIFIED BY PYKP",
+  "verify2": "VERIFIED BY",
+  "date": "DATE"
+ },
+ "submitTo": "PYKP HQ",
+ "projectCode": "WP13",
+ "name": "Pan Borneo Sabah Fasa 1B - WP13 (title to confirm)",
+ "projectTitle": "LEBUHRAYA PAN BORNEO SABAH (WP13)",
+ "signCompany": "PY KONSEP PERUNDING S/B (WP13)",
+ "toConfirm": true
+}

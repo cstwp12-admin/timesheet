@@ -1,0 +1,33 @@
+{
+ "kind": "ts-package-index",
+ "default": "WP12",
+ "appUrl": "",
+ "feedbackWhatsApp": "",
+ "packages": [
+  {
+   "code": "WP11",
+   "name": "Pan Borneo Sabah Fasa 1B - WP11 (title to confirm)",
+   "file": "WP11.json"
+  },
+  {
+   "code": "WP12",
+   "name": "Pan Borneo Sabah Fasa 1B - WP12 Sarang to Temuno",
+   "file": "WP12.json"
+  },
+  {
+   "code": "WP13",
+   "name": "Pan Borneo Sabah Fasa 1B - WP13 (title to confirm)",
+   "file": "WP13.json"
+  },
+  {
+   "code": "WP14",
+   "name": "Pan Borneo Sabah Fasa 1B - WP14 (title to confirm)",
+   "file": "WP14.json"
+  },
+  {
+   "code": "OTHER",
+   "name": "Other project (fill in your own details in Setup)",
+   "file": "OTHER.json"
+  }
+ ]
+}
