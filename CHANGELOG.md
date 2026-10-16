@@ -8,6 +8,9 @@ Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 - A name not in the team list can be typed in Check pages, and **Check pages** is available for every scan.
 - The HQ list flags pages **without hours**.
 - **Colour for each day code** on the calendar, the day editor and *Select days*: RD grey, PH purple, AL blue, EL yellow, MC red, PKP green, any other code brown, with a legend under the calendar. The printed form stays as the official form.
+- **HQ PDF, scanned pages turned**: each scanned timesheet is turned upright and landscape automatically (from the printed name or the QR); **⟲ / ⟳** per page and **Turn all** in Check pages. The cover page stays portrait; the page numbers follow the turn.
+- **Cover the QR codes** on the scanned pages in the HQ PDF once their data has been read (on by default; the photocopier file is not changed).
+- **Page numbers at the foot** of each HQ PDF page can be switched off.
 - **Colour fill on the printed form** (optional, off by default): Print / PDF → *Colour fill* → *Colour by code*, also next to *Print all*. The day's column is lightly tinted for RD, PH and leave in the calendar colours; the text stays black. Applies to the PDF, the preview and the Excel file (borders kept).
 
 ## v0.9.6 beta – 16 October 2026

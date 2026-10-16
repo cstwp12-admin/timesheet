@@ -442,6 +442,8 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
       <div><label class="lbl" for="b-month">Timesheet month</label><input type="month" id="b-month"></div>
       <div><label class="lbl" for="b-by">Compiled by</label><input type="text" id="b-by" placeholder="Name"></div>
       <div class="capopts span2"><label><input type="checkbox" id="b-cover" checked> Cover page: list of timesheets with page numbers and the app QR</label></div>
+      <div class="capopts span2"><label><input type="checkbox" id="b-footer" checked> <span>Page numbers at the foot of each page, e.g. “<span id="b-footer-eg">Timesheets · Page 1 of 12</span>”</span></label></div>
+      <div class="capopts span2"><label><input type="checkbox" id="b-hideqr" checked> Cover the QR codes on the scanned pages (their data has been read)</label></div>
     </div>
     <div class="btns"><button class="btn pri" id="b-preview" type="button">Preview</button><button class="btn acc" id="b-make" type="button">Make HQ PDF</button><button class="btn sm danger" id="b-clear" type="button">Clear list</button></div>
   </div>
@@ -1274,11 +1276,34 @@ function loadPdfLib() {
   if (window.PDFLib) return Promise.resolve();
   return PDFLibP || (PDFLibP = loadScript("lib/pdf-lib.min.js"));
 }
+/* a page thumbnail as it will appear in the HQ PDF: QR covered (if chosen), turned by deg */
+async function pageThumb(src, deg, box) {
+  if (!src) return "";
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  const base = document.createElement("canvas"); base.width = img.width; base.height = img.height; const b = base.getContext("2d"); b.drawImage(img, 0, 0);
+  if (box) { b.fillStyle = "#fff"; b.fillRect(box[0] * img.width, box[1] * img.height, (box[2] - box[0]) * img.width, (box[3] - box[1]) * img.height); }
+  return deg ? rotCanvas(base, deg).toDataURL("image/jpeg", 0.7) : base.toDataURL("image/jpeg", 0.7);
+}
+const hideQR = () => S.bundle.hideQR !== false, showFooter = () => S.bundle.footer !== false;
+/* box in the rendered page (0-1, from the top left, as shown with the page's own rotation r0) to PDF user space */
+function boxToPdf(b, r0, cb) {
+  const { x: ox, y: oy, width: w, height: h } = cb, map = (u, v) => r0 === 90 ? [v * w, u * h] : r0 === 180 ? [(1 - u) * w, v * h] : r0 === 270 ? [(1 - v) * w, (1 - u) * h] : [u * w, (1 - v) * h];
+  const a = map(b[0], b[1]), c = map(b[2], b[3]), x0 = Math.min(a[0], c[0]), y0 = Math.min(a[1], c[1]);
+  return { x: ox + x0, y: oy + y0, width: Math.abs(c[0] - a[0]), height: Math.abs(c[1] - a[1]) };
+}
+/* footer text at the bottom right of the page as viewed, whatever its rotation */
+function footerAt(p, tw) {
+  const { degrees } = PDFLib, R = ((p.getRotation().angle % 360) + 360) % 360, cb = p.getCropBox(), w = cb.width, h = cb.height, ox = cb.x, oy = cb.y;
+  if (R === 90) return { x: ox + w - 9, y: oy + h - 22 - tw, rotate: degrees(90) };
+  if (R === 180) return { x: ox + 22 + tw, y: oy + h - 9, rotate: degrees(180) };
+  if (R === 270) return { x: ox + 9, y: oy + 22 + tw, rotate: degrees(270) };
+  return { x: ox + w - 22 - tw, y: oy + 9, rotate: degrees(0) };
+}
 async function buildBundlePDF() {
   const items = await bundleItems();
-  S.bundle.month = $("#b-month").value || S.bundle.month; S.bundle.by = $("#b-by").value.trim() || S.bundle.by; S.bundle.cover = $("#b-cover").checked; save();
+  readBundleOpts();
   await loadPdfLib();
-  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
   const out = await PDFDocument.create();
   const font = await out.embedFont(StandardFonts.Helvetica);
   const A4 = [595.28, 841.89];
@@ -1293,26 +1318,39 @@ async function buildBundlePDF() {
   } else { const [by, bm] = (S.bundle.month || "").split("-").map(Number); claim = by ? `${MONTHS[bm - 1]} ${by}` : ""; }
   for (const it of items) {
     if (it.type === "application/pdf") {
-      try { const src = await PDFDocument.load(await it.blob.arrayBuffer(), { ignoreEncryption: true }); (await out.copyPages(src, src.getPageIndices())).forEach(pp => out.addPage(pp)); }
+      try {
+        const src = await PDFDocument.load(await it.blob.arrayBuffer(), { ignoreEncryption: true });
+        (await out.copyPages(src, src.getPageIndices())).forEach((pp, k) => {
+          const p = out.addPage(pp), r0 = ((p.getRotation().angle % 360) + 360) % 360, box = (it.qrb || [])[k];
+          if (hideQR() && box) p.drawRectangle(Object.assign(boxToPdf(box, r0, p.getCropBox()), { color: rgb(1, 1, 1) }));
+          const add = ((it.prot || [])[k] || 0) % 360; if (add) p.setRotation(degrees((r0 + add) % 360));
+        });
+      }
       catch (e) { console.warn(e); toast(`Could not read ${it.name}; it was left out.`); }
     } else {
       let blob = it.blob;
+      const box = hideQR() && (it.qrb || [])[0];
+      if (box) { const im = await loadImage(blob), cv = document.createElement("canvas"); cv.width = im.width; cv.height = im.height; const c = cv.getContext("2d"); c.drawImage(im, 0, 0); c.fillStyle = "#fff"; c.fillRect(box[0] * im.width, box[1] * im.height, (box[2] - box[0]) * im.width, (box[3] - box[1]) * im.height); blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.88)); }
       if (it.rotate) blob = (await processImage(blob, { enhance: false, rotate: it.rotate })).blob;
       const bytes = await blob.arrayBuffer();
-      const img = it.type === "image/png" ? await out.embedPng(bytes) : await out.embedJpg(bytes);
+      const img = it.type === "image/png" && !box && !it.rotate ? await out.embedPng(bytes) : await out.embedJpg(bytes);
       const land = img.width > img.height, [pw, ph] = land ? [A4[1], A4[0]] : A4;
       const p = out.addPage([pw, ph]), m = 18, sc = Math.min((pw - 2 * m) / img.width, (ph - 2 * m - 10) / img.height);
       const w = img.width * sc, h = img.height * sc; p.drawImage(img, { x: (pw - w) / 2, y: (ph - h) / 2 + 5, width: w, height: h });
     }
   }
-  // page numbers on every page
+  // page numbers at the foot of every page (optional), the right way up on turned pages
   const n = out.getPageCount(), ref = `${S.pkg} · Timesheets ${claim}`;
-  out.getPages().forEach((p, i) => {
-    const { width } = p.getSize(), t = `${ref} · Page ${i + 1} of ${n}`, tw = font.widthOfTextAtSize(t, 7);
-    p.drawText(t, { x: width - 22 - tw, y: 9, size: 7, font, color: rgb(0.45, 0.45, 0.45) });
+  if (showFooter()) out.getPages().forEach((p, i) => {
+    const t = `${ref} · Page ${i + 1} of ${n}`, tw = font.widthOfTextAtSize(t, 7);
+    p.drawText(t, Object.assign(footerAt(p, tw), { size: 7, font, color: rgb(0.45, 0.45, 0.45) }));
   });
   out.setTitle(`Timesheet submission ${claim}`); out.setCreator(`${APP_CREDIT} (v${APP_VERSION})`);
   return { bytes: await out.save(), name: `TIMESHEETS_${S.pkg}_${S.bundle.month || "SUBMISSION"}_SIGNED.pdf`, claim };
+}
+function readBundleOpts() {
+  S.bundle.month = $("#b-month").value || S.bundle.month; S.bundle.by = $("#b-by").value.trim() || S.bundle.by; S.bundle.cover = $("#b-cover").checked;
+  S.bundle.hideQR = $("#b-hideqr").checked; S.bundle.footer = $("#b-footer").checked; save();
 }
 async function makeBundle() {
   if (!(await bundleItems()).length) { toast("Add the signed copies first."); return; }
@@ -1324,16 +1362,16 @@ async function makeBundle() {
 async function previewBundle() {
   const items = await bundleItems();
   if (!items.length) { toast("Add the signed copies first."); return; }
-  S.bundle.month = $("#b-month").value || S.bundle.month; S.bundle.by = $("#b-by").value.trim() || S.bundle.by; S.bundle.cover = $("#b-cover").checked; save();
+  readBundleOpts();
   if (!LOGO_DATAURL) await logoDataURL("templates/logo.jpeg");
   let h = "", pg = 0;
   if (S.bundle.cover !== false) { const cv = coverOps(items); cv.pages.forEach(ops => { pg++; h += `<div class="pvpage"><div class="pvsheet">${opsSVG(ops, cv.W, cv.H)}</div><span>Page ${pg} · cover</span></div>`; }); }
   for (const it of items) {
-    if (it.type === "application/pdf" && (it.thumbs || []).length) { it.thumbs.forEach((t, k) => { pg++; const l = (it.labels || [])[k]; h += `<div class="pvpage"><div class="pvsheet"><img src="${t}" alt=""></div><span>Page ${pg} · ${esc((l && l.who) || "—")}</span></div>`; }); }
+    if (it.type === "application/pdf" && (it.thumbs || []).length) { for (const [k, t] of it.thumbs.entries()) { pg++; const l = (it.labels || [])[k], u = await pageThumb(t, (it.prot || [])[k] || 0, hideQR() ? (it.qrb || [])[k] : null); h += `<div class="pvpage"><div class="pvsheet"><img src="${u}" alt=""></div><span>Page ${pg} · ${esc((l && l.who) || "—")}</span></div>`; } }
     else if (it.type === "application/pdf") { h += `<div class="pvpage"><div class="pvsheet pvpdf"><b>PDF</b><span>${esc(it.name)}</span><span>${it.pages} page${it.pages > 1 ? "s" : ""}</span></div><span>Page ${pg + 1}${it.pages > 1 ? "–" + (pg + it.pages) : ""} · ${esc(it.who || "—")}</span></div>`; pg += it.pages; }
     else { pg++; const u = URL.createObjectURL(it.blob); h += `<div class="pvpage"><div class="pvsheet"><img src="${u}" alt="" style="transform:rotate(${it.rotate || 0}deg)"></div><span>Page ${pg} · ${esc(it.who || "—")} ${esc(it.month || "")}</span></div>`; }
   }
-  genSheet("Preview: HQ PDF", `${pg} page${pg > 1 ? "s" : ""}`, `<div class="pvlist">${h}</div><div class="btns"><button class="btn acc" type="button" id="pv-make">Make HQ PDF</button></div>`);
+  genSheet("Preview: HQ PDF", `${pg} page${pg > 1 ? "s" : ""}${showFooter() ? "" : " · no page numbers"}${hideQR() ? " · QR codes covered" : ""}`, `<div class="pvlist">${h}</div><div class="btns"><button class="btn acc" type="button" id="pv-make">Make HQ PDF</button></div>`);
   $("#pv-make").onclick = () => { closeSheet("#sh-gen"); makeBundle(); };
 }
 async function previewTeam() {
@@ -2172,8 +2210,27 @@ async function readPageId(src, w, h) {
     const sc = Math.min(1, 1500 / Math.max(sw, sh)), cv = document.createElement("canvas"); cv.width = Math.round(sw * sc); cv.height = Math.round(sh * sc);
     const c = cv.getContext("2d", { willReadFrequently: true }); c.fillStyle = "#fff"; c.fillRect(0, 0, cv.width, cv.height); c.drawImage(src, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
     let t = null; try { t = await decodeQRFromCanvas(cv); } catch (e) {}
-    const id = parsePageId(t); if (id) return id;
+    const id = parsePageId(t); if (!id) continue;
+    // where the QR is (to cover it in the HQ PDF) and which way up the page is
+    try { const g = await qrGeometry(cv); if (g) {
+      const P = q => ({ x: (sx + q.x / sc) / w, y: (sy + q.y / sc) / h }), tl = P(g.tl), tr = P(g.tr), br = P(g.br), bl = P(g.bl), pts = [tl, tr, br, bl];
+      if (/^TS1\|/.test(t)) {   // the full data QR has two lines of small text to its left: cover them too
+        const vx = (tr.x - tl.x) * w, vy = (tr.y - tl.y) * h, len = Math.hypot(vx, vy) || 1, k = 3.2 * len;
+        [tl, bl].forEach(q => pts.push({ x: q.x - vx / len * k / w, y: q.y - vy / len * k / h }));
+      }
+      const xs = pts.map(q => q.x), ys = pts.map(q => q.y), pad = 0.12 * Math.hypot((tr.x - tl.x) * w, (tr.y - tl.y) * h);
+      id.qrBox = [Math.max(0, Math.min(...xs) - pad / w), Math.max(0, Math.min(...ys) - pad / h), Math.min(1, Math.max(...xs) + pad / w), Math.min(1, Math.max(...ys) + pad / h)];
+      if (g.oriented) { const a = Math.atan2((tr.y - tl.y) * h, (tr.x - tl.x) * w) * 180 / Math.PI; id.rot = (360 - (Math.round(a / 90) * 90 + 360) % 360) % 360; }
+    } } catch (e) {}
+    return id;
   }
+  return null;
+}
+/* corners of the QR in a canvas: jsQR gives them in the symbol's own frame (so the page orientation follows) */
+async function qrGeometry(cv) {
+  try { await loadJsQR(); const ctx = cv.getContext("2d", { willReadFrequently: true }), r = jsQR(ctx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: "attemptBoth" });
+    if (r) { const L = r.location; return { tl: L.topLeftCorner, tr: L.topRightCorner, br: L.bottomRightCorner, bl: L.bottomLeftCorner, oriented: true }; } } catch (e) {}
+  if ("BarcodeDetector" in window) { try { const d = await new BarcodeDetector({ formats: ["qr_code"] }).detect(cv); if (d.length) { const b = d[0].boundingBox; return { tl: { x: b.x, y: b.y }, tr: { x: b.x + b.width, y: b.y }, br: { x: b.x + b.width, y: b.y + b.height }, bl: { x: b.x, y: b.y + b.height }, oriented: false }; } } catch (e) {} }
   return null;
 }
 async function pageIdsFor(blob, type) {
@@ -2373,16 +2430,17 @@ async function analysePages(blob, type) {
   const names = team.map(d => d.profile.name), out = []; let ocrErr = "";
   await pageCanvases(blob, type, async (cv, i, n) => {
     $("#busy-msg").textContent = `Reading page ${i + 1} of ${n}…`;
-    let label = null;
+    let label = null, rot = null, qrBox = null;
     const id = await readPageId(cv, cv.width, cv.height).catch(() => null);
-    if (id) label = Object.assign({ who: id.who, ym: id.ym, via: "qr", rec: id.rec }, id.hrs != null ? { hrs: id.hrs, ot: id.ot, desig: id.desig } : {});
+    if (id) { label = Object.assign({ who: id.who, ym: id.ym, via: "qr", rec: id.rec }, id.hrs != null ? { hrs: id.hrs, ot: id.ot, desig: id.desig } : {}); if (id.rot != null) rot = id.rot; qrBox = id.qrBox || null; }
     let crop = "";
     if (!label && !ocrErr) {
       const r = await readNameOnPage(cv, names);
       if (r.error) ocrErr = r.error;
-      else { crop = r.crop; if (r.match) { const d = teamFor(r.match); label = { who: r.match, ym: d ? d.month : "", via: "name", score: +r.score.toFixed(2), raw: r.raw }; } else if (r.raw) label = { who: "", raw: r.raw, via: "unsure" }; }
+      else { crop = r.crop; rot = r.rot; if (r.match) { const d = teamFor(r.match); label = { who: r.match, ym: d ? d.month : "", via: "name", score: +r.score.toFixed(2), raw: r.raw }; } else if (r.raw) label = { who: "", raw: r.raw, via: "unsure" }; }
     }
-    out.push({ label, thumb: thumbOf(cv), crop });
+    if (rot == null) rot = cv.height > cv.width ? 90 : 0;     // a portrait page holds the landscape form turned
+    out.push({ label, thumb: thumbOf(cv), crop, rot, qrBox });
   });
   // pages still unknown: remaining team names in print order (marked so they are checked)
   const used = new Set(out.map(p => p.label && p.label.who && normName(p.label.who)).filter(Boolean));
@@ -2406,10 +2464,15 @@ function pcFields(k, l) {
 async function openPageCheck(id) {
   const it = await DB.get(id); if (!it) return;
   const names = team.map(d => d.profile.name), labels = it.labels || [], thumbs = it.thumbs || [], crops = it.crops || [];
+  const isPdf = it.type === "application/pdf", prot = Array.from({ length: it.pages }, (_, k) => (it.prot || [])[k] || 0);
+  const tview = async k => isPdf ? pageThumb(thumbs[k], prot[k], hideQR() ? (it.qrb || [])[k] : null) : thumbs[k] || "";
+  const views = []; for (let k = 0; k < it.pages; k++) views.push(await tview(k));
   const VIA = { qr: "from the QR", name: "name read", order: "print order: check", unsure: "not sure: check" };
   genSheet("Check pages", `${esc(it.name)} · ${it.pages} page${it.pages > 1 ? "s" : ""}`, `
-    <div class="rglist">${Array.from({ length: it.pages }, (_, k) => { const l = labels[k] || {}; return `<div class="rgrow" style="grid-template-columns:72px minmax(0,1fr);display:grid;gap:8px;align-items:start">
-      <img src="${thumbs[k] || ""}" alt="" style="width:72px;border:1px solid var(--line);border-radius:4px;background:#fff">
+    ${isPdf ? `<div class="btns" style="margin-bottom:6px"><button class="btn sm" type="button" data-protall="-90">⟲ Turn all left</button><button class="btn sm" type="button" data-protall="90">⟳ Turn all right</button><span class="small muted" style="align-self:center">Pages are turned upright automatically where the app can tell. The cover page stays portrait.</span></div>` : ""}
+    <div class="rglist">${Array.from({ length: it.pages }, (_, k) => { const l = labels[k] || {}; return `<div class="rgrow" style="grid-template-columns:96px minmax(0,1fr);display:grid;gap:8px;align-items:start">
+      <div style="display:grid;gap:4px;justify-items:center"><img data-pthumb="${k}" src="${views[k]}" alt="" style="width:96px;max-height:96px;object-fit:contain;border:1px solid var(--line);border-radius:4px;background:#fff">
+        ${isPdf ? `<div style="display:flex;gap:4px"><button class="btn sm" type="button" data-prot="${k}|-90" aria-label="Turn page ${k + 1} left" style="min-width:40px">⟲</button><button class="btn sm" type="button" data-prot="${k}|90" aria-label="Turn page ${k + 1} right" style="min-width:40px">⟳</button></div>` : ""}</div>
       <div style="display:grid;gap:5px;min-width:0"><b class="small">Page ${k + 1} <span class="tag ${l.via === "qr" || l.via === "name" ? "ok" : "need"}">${VIA[l.via] || "not recognised"}</span></b>
         ${crops[k] ? `<img src="${crops[k]}" alt="Name as read" style="width:100%;border:1px solid var(--line);border-radius:4px">` : ""}
         <input type="text" data-pk="${k}" value="${esc(l.who || "")}" placeholder="Name (blank: not a timesheet)" list="team-names" aria-label="Name on page ${k + 1}">
@@ -2424,6 +2487,11 @@ async function openPageCheck(id) {
     ["desig", "hrs", "ot"].forEach(f => { const el = box.querySelector(`[data-f="${f}"]`); if (el && (el.value === "" || el.value === el.dataset.auto)) el.value = a[f]; if (el) el.dataset.auto = a[f]; });
     const hint = box.querySelector("[data-pch]"); if (hint) hint.textContent = who && !box.querySelector('[data-f="hrs"]').value ? "No hours found: type them from the signed copy" : "";
   };
+  $("#gen-body").onclick = async e => {
+    const one = e.target.closest("[data-prot]"), all = e.target.closest("[data-protall]"); if (!one && !all) return;
+    const ks = one ? [Number(one.dataset.prot.split("|")[0])] : prot.map((_, k) => k), d = Number(one ? one.dataset.prot.split("|")[1] : all.dataset.protall);
+    for (const k of ks) { prot[k] = ((prot[k] + d) % 360 + 360) % 360; const im = $(`#gen-body [data-pthumb="${k}"]`); if (im) im.src = await tview(k); }
+  };
   $("#pc-save").onclick = async () => {
     $$("#gen-body input[data-pk]").forEach(inp => {
       const k = Number(inp.dataset.pk), typed = inp.value.trim(), d = teamFor(typed), who = d ? d.profile.name : typed, old = labels[k] || {};
@@ -2437,7 +2505,7 @@ async function openPageCheck(id) {
       if (o != null && fmt1(o) !== auto.ot) ed.ot = o;
       if (Object.keys(ed).length) labels[k].edit = ed; else delete labels[k].edit;
     });
-    it.labels = labels; await DB.put(it); closeSheet("#sh-gen"); renderHQ(); toast("Pages saved.");
+    it.labels = labels; if (isPdf) it.prot = prot; await DB.put(it); closeSheet("#sh-gen"); renderHQ(); toast("Pages saved.");
   };
 }
 
@@ -2502,10 +2570,11 @@ async function addBundle(files, meta = {}) {
       const pages = type === "application/pdf" ? await pdfPageCount(blob) : 1;
       let pagesInfo = []; try { pagesInfo = await analysePages(blob, type); } catch (e) { console.warn(e); toast("Could not read the pages: " + e.message); }
       const labels = pagesInfo.map(x => x.label), thumbs = pagesInfo.map(x => x.thumb), crops = pagesInfo.map(x => x.crop);
+      const prot = pagesInfo.map(x => type === "application/pdf" ? x.rot || 0 : 0), qrb = pagesInfo.map(x => x.qrBox || null);
       found += labels.filter(l => l && (l.via === "qr" || l.via === "name")).length; total += labels.length || pages;
       labels.forEach(l => { if (l && l.rec && !team.some(t => normName(t.profile.name) === normName(l.who) && t.month === l.ym)) { addTeamRecord(l.rec); addedTeam++; } delete (l || {}).rec; });
       const l0 = labels.length === 1 ? labels[0] : null;
-      await DB.put({ id: uid(), scope: "bundle", name: f.name || "page.jpg", type, blob, order: order++, labels, thumbs, crops, who: (l0 && l0.who) || meta.who || g.who || "", month: (l0 && ymLabel(l0.ym)) || meta.month || g.month || "", ym: (l0 && l0.ym) || "", pages: labels.length || pages, rotate: 0, added: new Date().toISOString() });
+      await DB.put({ id: uid(), scope: "bundle", name: f.name || "page.jpg", type, blob, order: order++, labels, thumbs, crops, prot, qrb, who: (l0 && l0.who) || meta.who || g.who || "", month: (l0 && ymLabel(l0.ym)) || meta.month || g.month || "", ym: (l0 && l0.ym) || "", pages: labels.length || pages, rotate: 0, added: new Date().toISOString() });
     }
   });
   if (total) toast(`${found} of ${total} page${total > 1 ? "s" : ""} recognised${addedTeam ? `; ${addedTeam} added to the team list` : ""}. Tap Check pages to confirm.`);
@@ -2531,7 +2600,7 @@ async function renderHQ() {
   $("#b-list").innerHTML = h || `<div class="empty"><ol class="steps small"><li><span>Collect the signed hardcopies from the team.</span></li><li><span><b>Scan pages</b>: one sheet after another, the edges are found for you.</span></li><li><span>Type the name and month for each, then <b>Make HQ PDF</b> and send it to HQ.</span></li></ol></div>`;
   if (document.activeElement?.id !== "b-month") $("#b-month").value = S.bundle.month || curYM();
   if (document.activeElement?.id !== "b-by") $("#b-by").value = S.bundle.by || S.profile.name || "";
-  $("#b-cover").checked = S.bundle.cover !== false;
+  $("#b-cover").checked = S.bundle.cover !== false; $("#b-footer").checked = showFooter(); $("#b-footer-eg").textContent = `${S.pkg} · Timesheets ${ymLabel(S.bundle.month || curYM())} · Page 1 of 12`; $("#b-hideqr").checked = hideQR();
   // team
   renderMarkSeg();
   $("#t-signall").hidden = !(roleIs("re") && S.digiSign); $("#t-re-note").hidden = !(roleIs("re") && S.digiSign);
@@ -2551,7 +2620,7 @@ async function renderHQ() {
    ================================================================ */
 function openSheet(id) { $(id).hidden = false; document.body.style.overflow = "hidden"; }
 function closeSheet(id) { $(id).hidden = true; if (!$$(".sheet:not([hidden])").length && $("#cam").hidden) document.body.style.overflow = ""; }
-function genSheet(title, sub, html) { $("#gen-title").firstChild.textContent = title; $("#gen-sub").textContent = sub || ""; $("#gen-body").innerHTML = html; $("#gen-body").onchange = null; openSheet("#sh-gen"); }
+function genSheet(title, sub, html) { $("#gen-title").firstChild.textContent = title; $("#gen-sub").textContent = sub || ""; $("#gen-body").innerHTML = html; $("#gen-body").onchange = null; $("#gen-body").onclick = null; openSheet("#sh-gen"); }
 let toastT = 0;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
 
@@ -2784,6 +2853,8 @@ function wire() {
   $("#b-month").onchange = e => { S.bundle.month = e.target.value; save(); };
   $("#b-by").onchange = e => { S.bundle.by = e.target.value; save(); };
   $("#b-cover").onchange = e => { S.bundle.cover = e.target.checked; save(); };
+  $("#b-footer").onchange = e => { S.bundle.footer = e.target.checked; save(); };
+  $("#b-hideqr").onchange = e => { S.bundle.hideQR = e.target.checked; save(); };
   $("#b-make").onclick = makeBundle;
   $("#b-preview").onclick = () => busy("Preparing the preview…", previewBundle);
   $("#t-preview").onclick = previewTeam;
