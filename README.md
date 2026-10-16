@@ -21,7 +21,7 @@ Filling in the timesheet spreadsheet at the end of the month needs a laptop. The
 | **Tap a day** | 8.0, RD, PH, half day, AL, EL, MC, PKP, any hours or another code. Overtime under time codes 2–5. A private note per day. |
 | **Select days** | Set several days at once, e.g. a week of annual leave. |
 | **Checks** | Blank days, overtime under the wrong code, hours on a PH or RD that should be overtime, more than 24 hours in a day, missing details. |
-| **Print / PDF** | A4 landscape PDF drawn from the official spreadsheet form: same column widths, borders, header, codes, signature box and print scale. Share, save or open to print. |
+| **Print / PDF** | A4 landscape PDF drawn from the official spreadsheet form: same column widths, borders, header, codes, signature box and print scale. Share, save or open to print. Optional **colour fill**: the day's column tinted for RD, PH and leave (text stays black), also in the Excel file; off by default. |
 | **Excel** | The official form itself, filled in: formatting, header, `=SUM()` totals and print setup kept. |
 | **Document scanner** | Scan the signed sheet: the live camera finds the page edges, you can drag the corners, and the page is straightened and cleaned up (B&W, grey or colour). |
 | **Status** | Printed → Signed → Sent to HQ per month; tap again to undo. **Records** lists every month with its scans. |
@@ -120,6 +120,7 @@ Set `appUrl` in `packages/index.json` to the app's address so the HQ cover page 
 | `tests/test_app.py` | Automatic check: fills a sample month; checks totals, status undo, QR round trip, document scanner steps, PDF, Excel and HQ PDF |
 | `tests/test_id_mark.py` | Automatic check: the summary QR stays small (29 × 29 squares, about 13 mm) and its name, designation and hours are read from a noisy 200 dpi scan |
 | `tests/test_sign_scan.py` | Automatic check: PIN, roles, signature dropped when hours change, signatures in the QR, PDF and Excel; a simulated 200 dpi photocopier scan recognised page by page and the team list rebuilt from it |
+| `tests/test_color_fill.py` | Automatic check: colour fill off by default; on, the right columns are tinted in the PDF, preview and Excel (borders kept), text stays black |
 | `tests/test_cover_edit.py` | Automatic check: the compiler types designation and hours in Check pages; the cover page uses them, marked *; clearing a box restores the automatic value |
 | `GUIDE.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE.md` | User guide, trial plan, version history, licence |
 

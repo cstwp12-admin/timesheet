@@ -22,6 +22,7 @@
   --bg:#EDF0F2; --surface:#FFFFFF; --sunk:#F5F7F8; --ink:#14212B; --muted:#596873; --line:#D3DAE0;
   --accent:#D9480F; --accent-ink:#FFFFFF; --accent-soft:#FDEBDF; --ok:#2F7D3B; --ok-soft:#E3F2E5; --warn:#9A5B00; --warn-soft:#FBF0D9;
   --rd:#E4E9ED; --rd-ink:#4A5862; --ph:#F3E6FA; --ph-ink:#6B2D8C; --lv:#E2EEFB; --lv-ink:#1C5A9C;
+  --el:#FFF1C2; --el-ink:#7A5A00; --mc:#FBE3E4; --mc-ink:#A3262E; --pkp:#DDF3EC; --pkp-ink:#1E6B52; --oc:#EFE6DC; --oc-ink:#6B4E2E;
   --chip:#E4E9ED; --scrim:rgba(14,22,28,.55); --shadow:0 1px 2px rgba(20,33,43,.08),0 4px 14px rgba(20,33,43,.06);
   --bar:#14212B; --bar-ink:#EDF0F2;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
@@ -33,11 +34,13 @@
   --bg:#0E1418; --surface:#172027; --sunk:#121A20; --ink:#E6ECF0; --muted:#97A5AF; --line:#2A3640;
   --accent:#FF7A33; --accent-ink:#1A0C03; --accent-soft:#3A2214; --ok:#6CC27A; --ok-soft:#18301D; --warn:#E3A93B; --warn-soft:#33270F;
   --rd:#22303A; --rd-ink:#A9B7C1; --ph:#2E2038; --ph-ink:#D6A8EE; --lv:#16283A; --lv-ink:#8DBDF0;
+  --el:#33290F; --el-ink:#EBC45E; --mc:#3A1B1F; --mc-ink:#F09AA0; --pkp:#13302A; --pkp-ink:#7FD3B7; --oc:#30261C; --oc-ink:#D7B48C;
   --chip:#22303A; --scrim:rgba(0,0,0,.6); --shadow:0 1px 2px rgba(0,0,0,.3); --bar:#0A1014; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E1418; --surface:#172027; --sunk:#121A20; --ink:#E6ECF0; --muted:#97A5AF; --line:#2A3640;
   --accent:#FF7A33; --accent-ink:#1A0C03; --accent-soft:#3A2214; --ok:#6CC27A; --ok-soft:#18301D; --warn:#E3A93B; --warn-soft:#33270F;
   --rd:#22303A; --rd-ink:#A9B7C1; --ph:#2E2038; --ph-ink:#D6A8EE; --lv:#16283A; --lv-ink:#8DBDF0;
+  --el:#33290F; --el-ink:#EBC45E; --mc:#3A1B1F; --mc-ink:#F09AA0; --pkp:#13302A; --pkp-ink:#7FD3B7; --oc:#30261C; --oc-ink:#D7B48C;
   --chip:#22303A; --scrim:rgba(0,0,0,.6); --shadow:0 1px 2px rgba(0,0,0,.3); --bar:#0A1014; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--ink);margin:0}
@@ -117,13 +120,19 @@ details.more[open] summary{margin-bottom:8px}
 .day.RD{background:var(--rd)} .day.RD .dv{color:var(--rd-ink)}
 .day.PH{background:var(--ph)} .day.PH .dv{color:var(--ph-ink)}
 .day.LV{background:var(--lv)} .day.LV .dv{color:var(--lv-ink)}
+.k-RD{--kb:var(--rd);--ki:var(--rd-ink)} .k-PH{--kb:var(--ph);--ki:var(--ph-ink)} .k-AL{--kb:var(--lv);--ki:var(--lv-ink)} .k-EL{--kb:var(--el);--ki:var(--el-ink)}
+.k-MC{--kb:var(--mc);--ki:var(--mc-ink)} .k-PKP{--kb:var(--pkp);--ki:var(--pkp-ink)} .k-OC{--kb:var(--oc);--ki:var(--oc-ink)}
+.day[class*=" k-"]{background:var(--kb);border-color:transparent} .day[class*=" k-"] .dv{color:var(--ki)}
+.chip[class*=" k-"]{background:var(--kb);border-color:transparent} .chip[class*=" k-"] b{color:var(--ki)}
+.bulkbar button[class*="k-"]{background:var(--kb);color:var(--ki);border-color:transparent}
 .day.isph::after{content:"";position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--ph-ink)}
 .day.today{outline:2px solid var(--ink);outline-offset:-1px}
 .day.sel{outline:3px solid var(--accent);outline-offset:-2px}
 .day.note-mark .dn::after{content:" •";color:var(--accent)}
 .blank{visibility:hidden}
 .legend{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line)}
+.legend i{display:inline-block;min-width:26px;height:17px;padding:0 3px;border-radius:4px;vertical-align:-3px;margin-right:4px;border:1px solid transparent;background:var(--kb,var(--surface));color:var(--ki,var(--ink));font:600 10.5px/15px var(--f-mono);font-style:normal;text-align:center}
+.legend i.wk{border-color:var(--line)} .legend i.bl{border:1px dashed var(--muted);background:transparent;color:var(--muted)}
 .bulkbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r);padding:10px 12px;margin-bottom:10px}
 .bulkbar b{flex:1 1 100%;font-size:14.5px}
 .bulkbar button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-weight:600;font-family:var(--f-mono);font-size:14px;min-height:36px}
@@ -188,7 +197,7 @@ details.more[open] summary{margin-bottom:8px}
 .chip{border:1px solid var(--line);background:var(--sunk);border-radius:10px;min-height:54px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--ink)}
 .chip b{font-family:var(--f-mono);font-size:16px}
 .chip span{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.15}
-.chip[aria-pressed="true"]{border:2px solid var(--accent);background:var(--accent-soft)}
+.chip[aria-pressed="true"]{border:2px solid var(--accent);background:var(--accent-soft)} .chip[class*=" k-"][aria-pressed="true"]{border:2px solid var(--accent);background:var(--kb)}
 .otgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .stepper{display:flex;align-items:center;gap:4px}
 .stepper input{text-align:center;font-family:var(--f-mono)}
@@ -319,14 +328,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
     <div class="panel">
       <div class="bulkbar" id="bulkbar" hidden><b id="bulk-n">Tap the days, then a code</b><span id="bulk-codes" style="display:contents"></span><button type="button" id="bulk-done" style="font-family:var(--f-body);background:var(--ink);color:var(--bg);border-color:var(--ink)">Done</button></div>
       <div class="cal" id="cal"></div>
-      <div class="legend">
-        <span><i style="background:var(--surface)"></i>Hours</span>
-        <span><i style="background:var(--rd)"></i>RD</span>
-        <span><i style="background:var(--ph)"></i>PH</span>
-        <span><i style="background:var(--lv)"></i>Leave</span>
-        <span><b style="color:var(--accent);font-family:var(--f-mono)">+2.0</b> overtime</span>
-        <span><b style="color:var(--accent)">•</b> note</span>
-      </div>
+      <div class="legend" id="cal-legend"></div>
     </div>
   </section>
 
@@ -383,6 +385,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
     <div id="out-checks"></div>
     <div class="preview" id="preview"></div>
     <div class="out-actions">
+      <div class="oa"><b>Colour fill</b><div class="seg" data-fillseg></div><p data-fillhint></p></div>
       <div class="oa"><b>Mark under the form</b><div class="seg" data-markseg></div><p data-markhint></p></div>
       <div class="oa"><b>PDF for printing</b><button class="btn acc" id="btn-pdf-share" type="button">Share</button><button class="btn" id="btn-pdf-save" type="button">Save</button><button class="btn" id="btn-pdf-open" type="button">Open</button><p>A4 landscape, the official form. Print at actual size (100%), then sign. <button class="linkbtn" id="btn-sigadj" type="button">Adjust signature position</button></p></div>
       <div class="oa"><b>Excel</b><button class="btn" id="btn-xlsx" type="button">Save Excel</button><p>The official spreadsheet form, filled in.</p></div>
@@ -417,6 +420,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
     </div>
     <button class="btn sm" id="t-addmine" type="button" style="justify-self:start">Add mine (this month)</button>
     <div id="t-list"></div>
+    <div class="rgrow"><b style="font-size:15px">Colour fill on the printed forms</b><div class="seg" data-fillseg></div><span class="s" data-fillhint></span></div>
     <div class="rgrow"><b style="font-size:15px">Mark under the printed forms</b><div class="seg" data-markseg></div><span class="s" data-markhint></span></div>
     <div class="btns"><button class="btn" id="t-signall" type="button">Sign all as RE</button><button class="btn pri" id="t-preview" type="button">Preview</button><button class="btn acc" id="t-pdf" type="button">Print all (PDF)</button><button class="btn" id="t-xlsx" type="button">One Excel workbook</button><button class="btn sm" id="t-csv" type="button">Summary CSV</button><button class="btn sm danger" id="t-clear" type="button">Clear</button></div>
 
@@ -599,6 +603,7 @@ function cfg() {
     signLayout: o.signLayout ?? PK.signLayout ?? "form",
     sigAdj: o.sigAdj ?? PK.sigAdj ?? {},
     pageId: (v => v === true ? "data" : v === "id" ? "sum" : v || "off")(o.pageId ?? PK.pageId ?? "off"),
+    colorFill: !!(o.colorFill ?? PK.colorFill ?? false),
     verifiers: Object.assign({ v1Name: "", v1Title: "Resident Engineer", v2Name: "", v2Title: "S.O. Representative" }, PK.verifiers || {}, o.verifiers || {}),
   };
 }
@@ -621,12 +626,13 @@ function month(y = S.ui.y, m = S.ui.m, create = true) {
   return S.months[k];
 }
 function touch(md) { md.updated = new Date().toISOString(); save(); }
+/* colour key of a day code: RD, PH, AL, EL, MC, PKP, or OC for any other code */
+function codeKey(v) { v = String(v ?? "").trim().toUpperCase(); return ["RD", "PH", "AL", "EL", "MC", "PKP"].includes(v) ? v : "OC"; }
+function kcls(v) { return v === "" || v == null || isNum(v) ? "" : "k-" + codeKey(v); }
 function classOf(v) {
   if (v === "" || v == null) return "empty";
   if (isNum(v)) return "HRS";
-  if (v === "RD") return "RD";
-  if (v === "PH") return "PH";
-  return "LV";
+  return (v === "RD" ? "RD" : v === "PH" ? "PH" : "LV") + " " + kcls(v);
 }
 function totals(md, y, m) {
   const n = daysIn(y, m);
@@ -687,6 +693,18 @@ const ROLE = {
   label: { sz: 10, b: 1, h: "left" }, month: { sz: 10, b: 1, h: "center" }, year: { sz: 10, b: 1, h: "left" },
 };
 const RED = "FF0000";
+/* optional colour fill on the printed form: the day's column (time codes 1-5) for RD, PH and leave; text stays black.
+   Light print-friendly tints of the app's calendar colours. */
+const PRINT_FILL = { RD: "D9DEE3", PH: "E9D5F5", AL: "CFE2F7", EL: "FFE9A8", MC: "F7CFD2", PKP: "C9EBDF", OC: "E6D8C8" };
+function fillCells(sheet) {
+  if (!sheet.cfg.colorFill) return [];
+  const { y, m, md } = sheet, out = [];
+  for (let d = 1; d <= daysIn(y, m); d++) {
+    const v = md.rows[0].v[d]; if (v === undefined || v === "" || isNum(v)) continue;
+    for (let i = 0; i < md.rows.length; i++) out.push({ ref: `${dayCol(d)}${17 + i}`, color: PRINT_FILL[codeKey(v)] });
+  }
+  return out;
+}
 const DOTS = "…………………………………………………………………";
 
 function formCells(sheet) {
@@ -815,6 +833,7 @@ function textOps(rc, spec, runs) {
 }
 function sheetOps(sheet) {
   const L = LAYOUT, G = geometry(L), ops = [];
+  fillCells(sheet).forEach(f => { const r = G.rect(f.ref); ops.push({ k: "fill", x: r.x, y: r.y, w: r.w, h: r.h, color: f.color }); });
   L.lines.forEach(([x1, y1, x2, y2]) => ops.push({ k: "line", x1, y1, x2, y2 }));
   L.images.forEach(im => ops.push({ k: "img", x: im.x, y: im.y, w: im.w, h: im.h, src: im.src }));
   L.shapes.forEach(sh => {
@@ -858,7 +877,8 @@ async function drawSheetPDF(doc, sheet) {
   const X = x => pl.x0 + x * k, Y = y => pl.y0 + y * k;
   doc.setDrawColor(0); doc.setLineWidth(0.5);
   for (const o of ops) {
-    if (o.k === "line") doc.line(X(o.x1), Y(o.y1), X(o.x2), Y(o.y2));
+    if (o.k === "fill") { doc.setFillColor(...hex(o.color)); doc.rect(X(o.x), Y(o.y), o.w * k, o.h * k, "F"); }
+    else if (o.k === "line") doc.line(X(o.x1), Y(o.y1), X(o.x2), Y(o.y2));
     else if (o.k === "img") doc.addImage(o.data || await logoDataURL(o.src), o.fmt || "JPEG", X(o.x), Y(o.y), o.w * k, o.h * k);
     else if (o.k === "text") {
       let widths = o.runs.map(r => measure(r.t, r.sz, r.b));
@@ -895,6 +915,7 @@ function sheetSVG(sheet) {
   const { ops, W, H } = sheetOps(sheet), pl = pagePlacement(LAYOUT, W, H), k = pl.k;
   const X = x => (pl.x0 + x * k).toFixed(2), Y = y => (pl.y0 + y * k).toFixed(2);
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${pl.pw} ${pl.ph}" role="img" aria-label="Timesheet preview"><rect width="100%" height="100%" fill="#fff"/>`;
+  ops.filter(o => o.k === "fill").forEach(o => s += `<rect x="${X(o.x)}" y="${Y(o.y)}" width="${(o.w * k).toFixed(2)}" height="${(o.h * k).toFixed(2)}" fill="#${o.color}"/>`);
   s += `<g stroke="#000" stroke-width="0.5">`;
   ops.filter(o => o.k === "line").forEach(o => s += `<line x1="${X(o.x1)}" y1="${Y(o.y1)}" x2="${X(o.x2)}" y2="${Y(o.y2)}"/>`);
   s += `</g><g font-family="Helvetica, Arial, sans-serif">`;
@@ -949,14 +970,36 @@ function xmlCellWriter(doc) {
     const fa = t("family"); fa.setAttribute("val", "2"); pr.appendChild(fa);
     r.appendChild(pr); const tt = t("t", run.t); tt.setAttribute("xml:space", "preserve"); r.appendChild(tt); return r;
   }
-  return function write(c, styleId) {
+  function restyle(ref, fn) {   // change a cell's style without touching its content
+    const [cl, r] = splitRef(ref), row = rowEl(r), cs = [...row.getElementsByTagName("c")];
+    let el = cs.find(x => x.getAttribute("r") === ref);
+    if (!el) { el = doc.createElementNS(NS, "c"); el.setAttribute("r", ref); const after = cs.find(x => colIdx(splitRef(x.getAttribute("r"))[0]) > colIdx(cl)); row.insertBefore(el, after || null); }
+    el.setAttribute("s", fn(Number(el.getAttribute("s") || 0)));
+  }
+  write.restyle = restyle;
+  return write;
+  function write(c, styleId) {
     const el = cellEl(c.ref);
     if (styleId != null) el.setAttribute("s", styleId);
     if (c.rich) { el.setAttribute("t", "inlineStr"); const is = t("is"); c.rich.forEach(r => is.appendChild(runEl(r))); el.appendChild(is); }
     else if (c.formula) { el.appendChild(t("f", c.formula)); el.appendChild(t("v", String(c.num))); }
     else if (c.num != null && c.str == null) el.appendChild(t("v", String(c.num)));
     else { el.setAttribute("t", "inlineStr"); const is = t("is"), tt = t("t", c.str); tt.setAttribute("xml:space", "preserve"); is.appendChild(tt); el.appendChild(is); }
-  };
+  }
+}
+/* styles.xml helper: a copy of cell style `s` with a solid fill colour (cached) */
+function fillStyler(stylesXml) {
+  const doc = new DOMParser().parseFromString(stylesXml, "application/xml"), fills = doc.getElementsByTagName("fills")[0], xfs = doc.getElementsByTagName("cellXfs")[0];
+  const fillIds = {}, cache = {};
+  const fillId = color => { if (fillIds[color] != null) return fillIds[color];
+    const f = doc.createElementNS(NS, "fill"), pf = doc.createElementNS(NS, "patternFill"), fg = doc.createElementNS(NS, "fgColor"), bg = doc.createElementNS(NS, "bgColor");
+    pf.setAttribute("patternType", "solid"); fg.setAttribute("rgb", "FF" + color); bg.setAttribute("indexed", "64"); pf.appendChild(fg); pf.appendChild(bg); f.appendChild(pf); fills.appendChild(f);
+    fills.setAttribute("count", fills.getElementsByTagName("fill").length); return (fillIds[color] = fills.getElementsByTagName("fill").length - 1); };
+  return { style(sid, color) { const key = sid + "|" + color; if (cache[key] != null) return cache[key];
+      const list = [...xfs.getElementsByTagName("xf")], x = (list[sid] || list[0]).cloneNode(true);
+      x.setAttribute("fillId", fillId(color)); x.setAttribute("applyFill", "1"); xfs.appendChild(x); xfs.setAttribute("count", list.length + 1);
+      return (cache[key] = list.length); },
+    xml: () => new XMLSerializer().serializeToString(doc) };
 }
 function safeSheetName(s, used) {
   let n = String(s).replace(/[\[\]:*?/\\]/g, " ").replace(/\s+/g, " ").trim().slice(0, 31) || "Sheet";
@@ -971,12 +1014,14 @@ async function makeXLSX(sheets, names) {
   const tplDrawRels = await zip.file("xl/drawings/_rels/drawing1.xml.rels").async("string");
   const sheetRels = n => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing${n}.xml"/></Relationships>`;
   const ids = LAYOUT.styles, used = new Set();
+  const styler = sheets.some(sh => sh.cfg.colorFill) ? fillStyler(await zip.file("xl/styles.xml").async("string")) : null;
   const sheetEntries = [], definedNames = [], overrides = [], wbRels = [];
   sheets.forEach((sh, i) => {
     const n = i + 1;
     const doc = new DOMParser().parseFromString(tplSheet, "application/xml");
     const write = xmlCellWriter(doc);
     formCells(sh).forEach(c => write(c, ids[c.role]));
+    if (styler) fillCells(sh).forEach(f => write.restyle(f.ref, sid => styler.style(sid, f.color)));
     // days beyond the month: clear the heading so the sheet shows the real month length
     const xml = new XMLSerializer().serializeToString(doc);
     zip.file(`xl/worksheets/sheet${n}.xml`, xml);
@@ -1003,6 +1048,7 @@ async function makeXLSX(sheets, names) {
     wbRels.push(`<Relationship Id="rId${n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${n}.xml"/>`);
   });
   const N = sheets.length;
+  if (styler) zip.file("xl/styles.xml", styler.xml());
   zip.file("xl/workbook.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="${NS}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><workbookPr defaultThemeVersion="124226"/><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="25000" windowHeight="13000" activeTab="0"/></bookViews><sheets>${sheetEntries.join("")}</sheets><definedNames>${definedNames.join("")}</definedNames><calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>`);
   zip.file("xl/_rels/workbook.xml.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${wbRels.join("")}<Relationship Id="rId${N + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId${N + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
   zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${overrides.join("")}<Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`);
@@ -1302,7 +1348,7 @@ async function previewTeam() {
 /* ---------------------------------------------------------------- team timesheets (data files) */
 function teamSheet(d) {
   const [yy, mm] = d.month.split("-").map(Number);
-  const c = Object.assign({}, cfg(), d.cfg || {});
+  const c = Object.assign({}, cfg(), d.cfg || {}); c.colorFill = cfg().colorFill; c.pageId = cfg().pageId;
   return { pkg: d.pkg || S.pkg, profile: d.profile, cfg: c, y: yy, m: mm - 1, md: d.md };
 }
 async function loadTeamFiles(files) {
@@ -1575,6 +1621,10 @@ function renderCal() {
     h += `<button type="button" class="${cls.join(" ")}" data-day="${d}" aria-label="${esc(title)}: ${esc(v || "blank")}" title="${esc(title)}"><span class="dn">${d}</span><span class="dv">${show}</span><span class="ot">${ot ? "+" + fmt1(ot) : ""}</span></button>`;
   }
   $("#cal").innerHTML = h;
+  const lv = leaveCodes().filter(x => !["RD", "PH"].includes(x.code));
+  $("#cal-legend").innerHTML = [`<span><i class="wk">${fmt1(cfg().normalHours)}</i>Hours worked</span>`, `<span><i class="k-RD">RD</i>Rest day</span>`, `<span><i class="k-PH">PH</i>Public holiday</span>`,
+    ...lv.map(x => `<span><i class="${kcls(x.code)}">${esc(x.code)}</i>${esc(x.name)}</span>`), `<span><i class="k-OC">…</i>Other code</span>`, `<span><i class="bl">–</i>Blank</span>`,
+    `<span><b style="color:var(--accent);font-family:var(--f-mono)">+2.0</b> Overtime</span>`, `<span><b style="color:var(--accent)">•</b> Note</span>`].join("");
 }
 
 /* ---------------------------------------------------------------- status (tap to mark, tap again to undo) */
@@ -1638,7 +1688,7 @@ function renderDay() {
   $("#day-title").firstChild.textContent = `${DOW[dt.getDay()]} ${d} ${MONTHS[m]} ${y}`;
   $("#day-sub").textContent = hol ? `Public holiday: ${hol}` : c.restDays.includes(dt.getDay()) ? "Rest day" : "Working day";
   const v = md.rows[0].v[d] ?? "", chips = dayCodes();
-  $("#day-chips").innerHTML = chips.map(ch => `<button type="button" class="chip" data-val="${esc(ch.v)}" aria-pressed="${ch.v === v}"><b>${esc(ch.b)}</b><span>${esc(ch.s)}</span></button>`).join("");
+  $("#day-chips").innerHTML = chips.map(ch => `<button type="button" class="chip ${kcls(ch.v)}" data-val="${esc(ch.v)}" aria-pressed="${ch.v === v}"><b>${esc(ch.b)}</b><span>${esc(ch.s)}</span></button>`).join("");
   $("#day-hours").value = isNum(v) ? v : "";
   $("#day-other").value = (!isNum(v) && v && !chips.some(ch => ch.v === v)) ? v : "";
   $("#day-ot").innerHTML = OT_CODES.map(o => `<div><label class="lbl" for="ot-${o.row}">${o.code} · ${esc(o.name)}</label>
@@ -1663,7 +1713,7 @@ function setSelectMode(on) {
   $("#btn-select b").textContent = on ? "Selecting…" : "Select days";
   $("#bulkbar").hidden = !on;
   if (on) {
-    $("#bulk-codes").innerHTML = dayCodes().map(x => `<button type="button" data-setsel="${esc(x.v)}" title="${esc(x.s)}">${esc(x.b)}</button>`).join("");
+    $("#bulk-codes").innerHTML = dayCodes().map(x => `<button type="button" class="${kcls(x.v)}" data-setsel="${esc(x.v)}" title="${esc(x.s)}">${esc(x.b)}</button>`).join("");
     $("#bulk-n").textContent = "Tap the days, then a code";
   }
   renderCal();
@@ -1679,11 +1729,16 @@ function applySel(val) {
 /* mark under the printed form: chosen on the Print / PDF screen and next to Print all */
 const MARKS = { off: ["None", "Nothing under the form. The compiler's app reads the printed name on the scanned pages."], sum: ["Summary QR", "About 13 mm in the bottom corner, outside the form: project, month, name, designation, normal and OT hours. Lets the compiler's app identify each scanned page and list the hours."], data: ["Full QR", "About 28 mm: the whole timesheet, day by day. Lets a scan of the signed stack fill the compiler's team list."] };
 function renderMarkSeg() {
+  const f = cfg().colorFill;
+  $$("[data-fillseg]").forEach(el => el.innerHTML = `<button type="button" data-fill="0" aria-pressed="${!f}">None</button><button type="button" data-fill="1" aria-pressed="${f}">Colour by code</button>`);
+  $$("[data-fillhint]").forEach(el => el.textContent = f ? "The day's column is lightly tinted for RD, PH and leave (AL, EL, MC, PKP, other codes), so they stand out from normal working days. The text stays black. Print in colour." : "As the official form: no fill.");
   const v = cfg().pageId;
   $$("[data-markseg]").forEach(el => el.innerHTML = Object.entries(MARKS).map(([k, [l]]) => `<button type="button" data-mark="${k}" aria-pressed="${k === v}">${l}</button>`).join(""));
   $$("[data-markhint]").forEach(el => el.textContent = MARKS[v][1]);
 }
 document.addEventListener("click", e => {
+  const fb = e.target.closest("[data-fill]");
+  if (fb) { (S.over[S.pkg] = S.over[S.pkg] || {}).colorFill = fb.dataset.fill === "1"; save(); renderMarkSeg(); if (!$("#sh-out").hidden) renderOutput(); return; }
   const b = e.target.closest("[data-mark]"); if (!b) return;
   (S.over[S.pkg] = S.over[S.pkg] || {}).pageId = b.dataset.mark; save(); renderMarkSeg();
   if (!$("#sh-out").hidden) renderOutput();

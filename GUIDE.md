@@ -60,14 +60,17 @@ Check the project code at the top left. Tap it to change to another project. **T
 
 <p><img src="guide/06_summary.png" alt="Summary: hours, overtime, days, RD/PH, leave and a ready-to-print note" width="360"></p>
 
+Each code has its own colour on the calendar: **RD** grey, **PH** purple, **AL** blue, **EL** yellow, **MC** red, **PKP** green, any other code brown, a dashed box for a blank day. The legend under the calendar shows them. The printed form is not coloured unless you choose *Colour fill* on the Print / PDF screen (section 3).
+
 Everything is saved on the phone as you go.
 
 ## 3. Print
 
 1. Tap **Print / PDF** in the bottom bar. The preview is the A4 page, laid out as the official form; **Zoom** to check the figures.
-2. **Mark under the form**: *None* (default), *Summary QR* (about 13 mm in the bottom corner, outside the form: project, month, name, designation, normal and OT hours) or *Full QR* (about 28 mm, the whole timesheet). Use what your compiler asks for.
-3. **PDF for printing**: **Share** (WhatsApp, e-mail, a printer app), **Save**, or **Open** to print from the viewer. Print on A4 at **actual size (100%)**, not "fit to page".
-4. **Excel**: the official spreadsheet form, filled in.
+2. **Colour fill** (optional): *None* (default, as the official form) or *Colour by code*. With colour, the day's column is lightly tinted for RD, PH and leave in the same colours as the calendar, so they stand out from normal working days. The text stays black. Print in colour. The Excel file gets the same fill.
+3. **Mark under the form**: *None* (default), *Summary QR* (about 13 mm in the bottom corner, outside the form: project, month, name, designation, normal and OT hours) or *Full QR* (about 28 mm, the whole timesheet). Use what your compiler asks for.
+4. **PDF for printing**: **Share** (WhatsApp, e-mail, a printer app), **Save**, or **Open** to print from the viewer. Print on A4 at **actual size (100%)**, not "fit to page".
+5. **Excel**: the official spreadsheet form, filled in.
 
 <p><img src="guide/07_print.png" alt="Print / PDF: preview of the form and the mark choice" width="260">&nbsp;<img src="guide/08_print_actions.png" alt="PDF, Excel, Send to the compiler and WhatsApp text" width="260"></p>
 
@@ -126,7 +129,7 @@ Set your role to **Compiler** or **RE** in Setup. **HQ submission** appears at t
 **1 · Team timesheets**
 
 1. **Scan team QR**: each person shows their QR (section 5); the app confirms each name. A printed timesheet's QR works too. **Load data files** reads files sent on WhatsApp; **Add mine** adds your own month.
-2. **Mark under the printed forms**: the same choice as on Print / PDF.
+2. **Colour fill** and **Mark under the printed forms**: the same choices as on Print / PDF, used for everyone's sheet.
 3. **Preview**, then **Print all (PDF)**: everyone's timesheet, one page each, ready for stamps and signatures. **One Excel workbook** (a sheet per person) and **Summary CSV** (hours, overtime, leave per person) are there too.
 
 <p><img src="guide/16_team.png" alt="Team timesheets: three people with hours and OT, mark choice, Preview and Print all" width="300"></p>

@@ -7,6 +7,8 @@ Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 - **Check pages: designation and hours editable.** For each scanned page the compiler can type or correct the designation, normal hours and OT hours used on the cover page, e.g. when the scan has no QR and the person is not in the team list. Entered hours are marked * on the cover page with a note. Clear a box to go back to the automatic value.
 - A name not in the team list can be typed in Check pages, and **Check pages** is available for every scan.
 - The HQ list flags pages **without hours**.
+- **Colour for each day code** on the calendar, the day editor and *Select days*: RD grey, PH purple, AL blue, EL yellow, MC red, PKP green, any other code brown, with a legend under the calendar. The printed form stays as the official form.
+- **Colour fill on the printed form** (optional, off by default): Print / PDF → *Colour fill* → *Colour by code*, also next to *Print all*. The day's column is lightly tinted for RD, PH and leave in the calendar colours; the text stays black. Applies to the PDF, the preview and the Excel file (borders kept).
 
 ## v0.9.6 beta – 16 October 2026
 

@@ -1,6 +1,6 @@
 /* Offline use: network first (so updates arrive), cached copy when there is no signal.
    Bump the version after changing files so phones fetch the new ones. */
-const C = "ts-v0.9.7";
+const C = "ts-v0.9.7-3";
 const PRE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png",
   "lib/jspdf.umd.min.js", "lib/jszip.min.js", "lib/pdf-lib.min.js", "lib/qrcode.min.js", "lib/jsQR.min.js", "lib/pdfjs.min.js", "lib/pdfjs.worker.min.js",
   "app-data.js", "templates/form.xlsx", "templates/form.layout.json", "templates/logo.jpeg",
