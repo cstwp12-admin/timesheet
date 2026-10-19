@@ -25,7 +25,8 @@ B64 = "const buf = new Uint8Array(await b.arrayBuffer()); let s=''; for (let i=0
 PLACEHOLDER = """() => {
   LAYOUT.shapes[0].paras[0][0].t = 'COMPANY NAME SDN BHD'; LAYOUT.shapes[0].paras[0][1].t = ' (000000-X)';
   LAYOUT.shapes[0].paras[1][0].t = 'CONSULTING ENGINEERS'; LAYOUT.images = []; delete EMBED.bin['templates/logo.jpeg']; LOGO_DATAURL = ''; logoDataURL = async () => '';
-  PK.company = 'COMPANY NAME SDN BHD'; PK.submitTo = 'HQ';
+  PK.company = 'COMPANY NAME SDN BHD'; PK.submitTo = 'HQ'; PK.name = 'Sample road upgrading project';
+  PK.signLabels = Object.assign({}, PK.signLabels, { verify1: 'VERIFIED BY (RE)' });
   const o = S.over[S.pkg] = S.over[S.pkg] || {};
   o.projectTitle = 'SAMPLE ROAD UPGRADING PROJECT (PACKAGE 1)'; o.signCompany = 'COMPANY NAME S/B';
   save(); render();
@@ -74,7 +75,7 @@ def desk_photo(pdf, out_jpg):
 
 with sync_playwright() as p:
     br = p.chromium.launch()
-    ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2)
+    ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     pg = ctx.new_page()
     pg.on("dialog", lambda d: d.accept())
     pg.goto(URL)
@@ -187,5 +188,23 @@ with sync_playwright() as p:
     pg.click("#pc-save"); pg.wait_for_timeout(3400)
     pg.click("#b-preview"); pg.wait_for_timeout(2500)
     shot(pg, "19_hq_preview")
+    pg.click("#sh-gen [data-close]")
+    # the HQ cover page on its own, as printed (for the guide, the docs site and the brochure)
+    pg.evaluate("() => { S.bundle.month = '2026-09'; save(); }")
+    save_blob(pg, "await loadPdfLib(); return new Blob([(await buildBundlePDF()).bytes], {type: 'application/pdf'});", TMP / "hq.pdf")
+    subprocess.run(["pdftoppm", "-r", "110", "-png", "-f", "1", "-l", "1", str(TMP / "hq.pdf"), str(TMP / "cover")], check=True)
+    im = Image.open(next(TMP.glob("cover*.png"))).convert("RGB")
+    im.thumbnail((720, 4000)); im.save(OUT / "20_hq_cover.png", optimize=True); print("guide/20_hq_cover.png", im.size)
+
+    # ---- drag and drop on a computer
+    desk = br.new_context(viewport={"width": 1100, "height": 700}, device_scale_factor=1)
+    dp = desk.new_page()
+    dp.goto(URL); dp.wait_for_selector("#w-name"); dp.evaluate(PLACEHOLDER)
+    dp.fill("#w-name", "Ts. Adam Lee Chee Wai"); dp.click("#w-go")
+    dp.evaluate("() => { S.ui.y = 2026; S.ui.m = 8; save(); fillMonth(false); render(); }"); dp.wait_for_timeout(3500)
+    dp.evaluate("""() => { const dt = new DataTransfer(); dt.items.add(new File(['x'], 'signed.pdf', { type: 'application/pdf' }));
+        document.dispatchEvent(new DragEvent('dragenter', { dataTransfer: dt, bubbles: true, cancelable: true })); }""")
+    dp.wait_for_timeout(300)
+    shot(dp, "21_drop")
     br.close()
 print("done")

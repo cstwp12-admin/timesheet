@@ -1,6 +1,6 @@
 # Timesheet – User Guide
 
-For app version 0.9.8 (beta). In the app, **Help** (top right) opens this guide and what's new. **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
+For app version 0.9.9 (beta). In the app, **Help** (top right) opens this guide and what's new. **Open the app:** the link shared in your team's WhatsApp group, or scan the QR code on a colleague's phone (Setup → **Share the app**).
 
 The letterhead, project title and names in the screenshots are samples.
 
@@ -10,13 +10,13 @@ The letterhead, project title and names in the screenshots are samples.
 
 1. **Fill month**, then tap the days that were different (leave, MC, overtime).
 2. **Print / PDF** → print on A4 at actual size.
-3. **Sign and stamp by hand**, then the PYKP and SOR verification.
+3. **Sign and stamp by hand**, then the RE and SOR verification.
 4. **Scan signed copy** to keep it on your phone.
 5. Hand in the hardcopy, and **Show QR** to the compiler if asked.
 
 The strip near the top of the screen (**Fill · Print · Sign · Submit**) shows where you are; tap a step to go to it.
 
-At the top right: **Help** (this guide, what's new, feedback), **Records** and **Setup**.
+At the top right: **Help** (this guide, what's new, share the app, feedback), **Records** and **Setup**.
 
 ## 1. Install and first start
 
@@ -80,7 +80,7 @@ Everything is saved on the phone as you go.
 
 ## 4. Sign and scan the signed copy
 
-**Sign by hand.** Sign and stamp above *Signature*; the RE signs and stamps at *Verified by PYKP*; the SOR at *Verified by*.
+**Sign by hand.** Sign and stamp above *Signature*; the RE signs and stamps on the RE's *Verified by* line; the SOR on the SOR's.
 
 **Scan the signed copy:**
 
@@ -88,6 +88,8 @@ Everything is saved on the phone as you go.
 2. Put the sheet on a darker surface. The app outlines the page; tap the round button. (When the live camera is not available, the phone's camera app opens instead.)
 3. Drag the four corners to the edges of the sheet if needed (**Whole photo** keeps everything), then **Next**.
 4. Choose **B&W** (sharpest), **Grey** or **Colour** (keeps blue ink), rotate if needed, then **Use scan**.
+
+**On a computer:** drag the scan (photo or PDF) onto the main screen. It is saved as the signed copy of the month shown.
 
 <p><img src="guide/10_scan_corners.png" alt="Scanner: corners on the edges of the sheet" width="260">&nbsp;<img src="guide/11_scan_clean.png" alt="Scanner: the straightened, cleaned page" width="260"></p>
 
@@ -101,7 +103,7 @@ The month is marked **Signed** and the scan is kept on the phone. Tap the thumbn
 
 ## 5. Send your timesheet to the compiler
 
-On **Print / PDF**, tap **Show QR**. The compiler scans it with their phone (no internet needed). **Data file** sends the same on WhatsApp instead.
+On **Print / PDF**, tap **Show QR**. The compiler scans it with their phone (no internet needed). **Data file** sends the same on WhatsApp instead. On a computer, the compiler can drag the data files onto *Team timesheets*.
 
 <p><img src="guide/09_show_qr.png" alt="Show to the compiler: QR code with the month's totals" width="300"></p>
 
@@ -117,9 +119,9 @@ On **Print / PDF**, tap **Show QR**. The compiler scans it with their phone (no 
 - **Signature block**: the original form layout (default) or side by side; RE and SOR names printed under their lines; the mark under the form.
 - **Project**: the project title on the form, normal hours per day, rest days.
 - **Public holidays**: the year's list; remove one, or add a declared special or replacement holiday.
-- **Backup**: save your timesheets to a file and restore them on a new phone (scans are not in the backup).
+- **Backup**: save your timesheets to a file and restore them on a new phone (scans are not in the backup) On a computer, drop the backup file onto the app to restore it.
 - **Delete data on this phone**: *Delete everything and start again* clears all months, scans, lists, your signature and settings (save a backup first).
-- **Share the app**: QR code and link. **About**: version and credit.
+- **Share the app**: QR code and link (also under **Help → Share this app**). **About**: version and credit.
 
 <p><img src="guide/13_records.png" alt="Records: September with its status and scan" width="260">&nbsp;<img src="guide/14_setup.png" alt="Setup: feedback, role, digital signature, signature block, project" width="260"></p>
 
@@ -140,7 +142,7 @@ Set your role to **Compiler** or **RE** in Setup. **HQ submission** appears at t
 **2 · Signed copies for HQ**
 
 1. After the SOR has signed, scan the whole stack on the photocopier into one PDF and send it to your phone.
-2. **Add scan PDF** and pick it. The app reads the printed name on each page and matches it to the team list (pages turned sideways are fine). Pages it cannot read take the remaining names in print order. (Or **Scan pages** with the phone, one sheet after another.)
+2. **Add scan PDF** and pick it (on a computer, drag the PDF onto this screen). The app reads the printed name on each page and matches it to the team list (pages turned sideways are fine). Pages it cannot read take the remaining names in print order. (Or **Scan pages** with the phone, one sheet after another.)
 3. Tap **Check pages**: each page shows a thumbnail, the name line as read, the name, and the **designation, normal hours and OT hours** for the cover page. Correct any page, then **Save**.
    - **Turning pages:** the app turns each scanned timesheet upright and landscape by itself where it can tell (from the printed name or the QR). Use **⟲ / ⟳** under a page to turn it, or **Turn all left / right**. The cover page always stays portrait.
    - Hours come from the team list (QR collected in screen 1) or the summary QR on the page. If a box is empty (*No hours found*) or differs from the signed copy, type the figures from the signed copy. The cover page uses what you typed and marks those hours with **\***.
@@ -153,9 +155,9 @@ Set your role to **Compiler** or **RE** in Setup. **HQ submission** appears at t
 
 <p><img src="guide/17_bundle.png" alt="Signed copies for HQ: the photocopier PDF, 3 pages read" width="260">&nbsp;<img src="guide/18_check_pages.png" alt="Check pages: each page with the name as read, the name, designation, normal and OT hours" width="260"></p>
 
-The cover page is generated digitally (no signature needed): the list of timesheets with designation, normal hours, OT, pages and page numbers, anyone still pending, and the app QR. Every page of the HQ PDF is numbered unless you untick the page numbers.
+The cover page is generated digitally (no signature needed) in the same style as the other WPN apps: *Monthly timesheet submission*, the month in large type, three boxes with the number of timesheets, normal hours and overtime, the submission details, then the list of timesheets with designation, normal hours, OT, pages and page numbers, anyone still pending, and a small app QR at the bottom right. Every page of the HQ PDF is numbered unless you untick the page numbers.
 
-<p><img src="guide/19_hq_preview.png" alt="Preview of the HQ PDF: cover page, then the scanned pages" width="300"></p>
+<p><img src="guide/20_hq_cover.png" alt="The HQ cover page: the month, totals in boxes, submission details and the list of timesheets" width="340">&nbsp;<img src="guide/19_hq_preview.png" alt="Preview of the HQ PDF: cover page, then the scanned pages" width="260"></p>
 
 ## 8. Good to know
 

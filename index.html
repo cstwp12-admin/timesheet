@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' data: blob: https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="description" content="Monthly timesheet for project staff: key in on the phone, print the official A4 timesheet for signature, scan the signed copy and compile the team's copies for submission to HQ. Developed by WPN.">
 <title>Timesheet</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -20,7 +21,7 @@
    The top bar stays dark in both themes. */
 :root{
   --bg:#EDF0F2; --surface:#FFFFFF; --sunk:#F5F7F8; --ink:#14212B; --muted:#596873; --line:#D3DAE0;
-  --accent:#D9480F; --accent-ink:#FFFFFF; --accent-soft:#FDEBDF; --ok:#2F7D3B; --ok-soft:#E3F2E5; --warn:#9A5B00; --warn-soft:#FBF0D9;
+  --accent:#C8420D; --accent-ink:#FFFFFF; --accent-soft:#FDEBDF; --ok:#2B7537; --ok-soft:#E3F2E5; --warn:#9A5B00; --warn-soft:#FBF0D9;
   --rd:#E4E9ED; --rd-ink:#4A5862; --ph:#F3E6FA; --ph-ink:#6B2D8C; --lv:#E2EEFB; --lv-ink:#1C5A9C;
   --el:#FFF1C2; --el-ink:#7A5A00; --mc:#FBE3E4; --mc-ink:#A3262E; --pkp:#DDF3EC; --pkp-ink:#1E6B52; --oc:#EFE6DC; --oc-ink:#6B4E2E;
   --chip:#E4E9ED; --scrim:rgba(14,22,28,.55); --shadow:0 1px 2px rgba(20,33,43,.08),0 4px 14px rgba(20,33,43,.06);
@@ -48,6 +49,12 @@ body{font-family:var(--f-body);font-size:16px;line-height:1.4;-webkit-text-size-
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 [hidden]{display:none!important}
+.drop{position:fixed;inset:0;z-index:95;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+.drop-box{background:var(--surface);color:var(--ink);border:3px dashed var(--accent);border-radius:16px;padding:28px 32px;max-width:520px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+.drop-box b{display:block;font:700 30px/1.1 var(--f-disp);margin-bottom:8px}
+.drop-box p{margin:0;font-size:17px;line-height:1.45}
+.desk-only{display:none}
+@media (hover:hover) and (pointer:fine){.desk-only{display:block}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{max-width:780px;margin:0 auto;padding-inline:16px}
 h1,h2,h3{font-family:var(--f-disp);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
@@ -366,12 +373,14 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
       <button class="bigbtn primary" id="btn-scan-signed" type="button"><b>Scan signed copy</b><span>Camera, page edges found for you</span></button>
       <button class="bigbtn" id="btn-file-signed" type="button"><b>Add file</b><span>Photo or PDF already on the phone</span></button>
     </div>
+    <p class="small muted desk-only" style="margin:8px 0 0">On a computer: drag the scan onto this page.</p>
     <div class="thumbs" id="sign-thumbs" style="margin-top:10px"></div>
   </section>
 
   <button type="button" class="rflstrip" id="btn-hq"><span><b>HQ submission</b> <span class="tag">For the compiler</span><br><span class="small muted">Collect the team's signed timesheets into one PDF for submission to HQ</span></span><span class="rflgo" aria-hidden="true">›</span></button>
 
   <p class="credit" id="credit-line">Timesheet</p>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </main>
 
 <aside class="dock">
@@ -431,12 +440,13 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
 <div class="sheet" id="sh-team" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="team-title">
   <div class="sheet-h"><h3 id="team-title">1 · Team timesheets<span class="sub" id="team-sub">Collect, sign, print</span></h3><button class="btn sm" data-close type="button">Back</button></div>
   <div class="sheet-b">
-        <p class="small muted" style="margin:0">Each person opens <i>Print / PDF → Show QR</i> and you scan it (a printed timesheet's QR works too). <span id="t-re-note">The RE can sign digitally under <i>Verified by PYKP</i>.</span> Then print all in one go for stamps and signatures, keep one Excel workbook (a sheet per person) or get a summary.</p>
+        <p class="small muted" style="margin:0">Each person opens <i>Print / PDF → Show QR</i> and you scan it (a printed timesheet's QR works too). <span id="t-re-note">The RE can sign digitally on the RE's <i>Verified by</i> line.</span> Then print all in one go for stamps and signatures, keep one Excel workbook (a sheet per person) or get a summary.</p>
     <div class="addbar">
       <button class="bigbtn primary" id="t-scan" type="button"><b>Scan team QR</b><span>One person after another</span></button>
       <button class="bigbtn" id="t-load" type="button"><b>Load data files</b><span>Files sent on WhatsApp</span></button>
     </div>
     <button class="btn sm" id="t-addmine" type="button" style="justify-self:start">Add mine (this month)</button>
+    <p class="small muted desk-only" style="margin:0">On a computer: drag the data files onto this screen.</p>
     <div id="t-list"></div>
     <div class="rgrow"><b style="font-size:15px">Colour fill on the printed forms</b><div class="seg" data-fillseg></div><span class="s" data-fillhint></span></div>
     <div class="rgrow"><b style="font-size:15px">Mark under the printed forms</b><div class="seg" data-markseg></div><span class="s" data-markhint></span></div>
@@ -453,6 +463,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
       <button class="bigbtn" id="b-files" type="button"><b>Add scan PDF</b><span>From the photocopier, or photos</span></button>
     </div>
     <button class="btn sm" id="b-mine" type="button" style="justify-self:start">Add my own signed copies</button>
+    <p class="small muted desk-only" style="margin:0">On a computer: drag the scan PDF or photos onto this screen.</p>
     <div class="rglist" id="b-list"></div>
     <div id="b-miss"></div>
     <datalist id="team-names"></datalist>
@@ -485,7 +496,7 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
 <input type="file" id="f-files" accept="image/*,application/pdf" multiple hidden>
 <input type="file" id="f-json" accept=".json,application/json" multiple hidden>
 <input type="file" id="f-restore" accept=".json,application/json" hidden>
-<div class="toast" id="toast" hidden></div>
+<div class="drop" id="drop" hidden><div class="drop-box"><b id="drop-h">Drop to add</b><p id="drop-p"></p></div></div>
 <div class="busy" id="busy" hidden><span id="busy-msg">Working…</span></div>
 
 <script src="lib/jspdf.umd.min.js"></script>
@@ -500,14 +511,14 @@ table.tbl td.n{font-family:var(--f-mono);text-align:right}
    on the device. Credit: fixed in the app, not taken from any package.
    ================================================================ */
 const APP_NAME = "Timesheet";
-const APP_VERSION = "0.9.8";
-const APP_BUILD = "0.9.8.1";          // must match version.json and the cache name in sw.js
+const APP_VERSION = "0.9.9";
+const APP_BUILD = "0.9.9.1";          // must match version.json and the cache name in sw.js
 const WHATS_NEW = [
-  "QR codes on photocopier scans are now found and covered more reliably, even when the scan is rough. Check pages shows for each page whether a QR was found, with a tick to cover it.",
-  "HQ PDF: Share, Save or Open.",
-  "Records: delete a month. Setup: Delete data on this phone.",
-  "Help (?) at the top: user guide, what's new and feedback. A notice appears when a new version is out.",
-  "Month switcher on the calendar.",
+  "On a computer: drag and drop files onto the app. A signed copy on the main screen, the photocopier scan on Signed copies for HQ, data files on Team timesheets, a backup file to restore it.",
+  "New HQ cover page: the month in large type, the totals in boxes, submission details and the list of timesheets, in the same style as the other WPN apps.",
+  "Clearer colours for buttons and labels (easier to read in sunlight).",
+  "Help opens the user guide and what's new as web pages, and has Share this app: a QR code and link for a colleague's phone.",
+  "Safer import: QR codes, data files and backups are checked before they are used.",
 ];
 const APP_STAGE = "beta";
 const APP_AUTHOR = "WPN";
@@ -784,7 +795,7 @@ function formCells(sheet) {
     if (V.v2Name) { put("AF37", "nameBold", { str: V.v2Name }); if (V.v2Title) put("AF38", "name", { str: V.v2Title }); }
     put("Z40", "sign", { str: `${L.date}:   ` });
   } else {
-    // employee on top; PYKP (RE) and SOR verification side by side below
+    // employee on top; RE and SOR verification side by side below
     const SH = "………………………………", A = "X", B = "AE";
     put(`${A}25`, "signBold", { str: `${L.prepared || "PREPARED BY"} :` });
     put(`${A}27`, "sign", { str: `${L.employee} : ${SH}………` });
@@ -1153,12 +1164,12 @@ function opsSVGInner(ops) {
   let s = `<g font-family="Helvetica, Arial, sans-serif">`;
   for (const o of ops) {
     if (o.k === "line") s += `<line x1="${o.x1}" y1="${o.y1}" x2="${o.x2}" y2="${o.y2}" stroke="#${o.color || "000000"}" stroke-width="${o.w || 0.6}"/>`;
-    else if (o.k === "rect") s += `<rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" fill="${o.fill ? "#" + o.fill : "none"}" stroke="${o.stroke ? "#" + o.stroke : "none"}" stroke-width="${o.lw || 0.6}"/>`;
+    else if (o.k === "rect") s += `<rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" fill="${o.fill ? "#" + o.fill : "none"}" stroke="${o.stroke ? "#" + o.stroke : "none"}" stroke-width="${o.lw || 0.6}"${o.r ? ` rx="${o.r}"` : ""}/>`;
     else if (o.k === "img") s += `<image href="${esc(o.src)}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" preserveAspectRatio="none"/>`;
     else if (o.k === "qr") { const q = qrMatrix(o.text, o.ec, o.mode), n = q.getModuleCount(), c = o.size / n; let d = ""; for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) d += `M${(o.x + k * c).toFixed(2)} ${(o.y + r * c).toFixed(2)}h${c.toFixed(2)}v${c.toFixed(2)}h-${c.toFixed(2)}z`; s += `<path d="${d}" fill="#000"/>`; }
     else if (o.k === "text") {
       const t = fitText(o); const anchor = o.align === "center" ? "middle" : o.align === "right" ? "end" : "start";
-      s += `<text x="${o.x}" y="${o.y}" font-size="${o.sz}" font-weight="${o.b ? 700 : 400}" fill="#${o.color || "000000"}" text-anchor="${anchor}" xml:space="preserve">${esc(t)}</text>`;
+      s += `<text x="${o.x}" y="${o.y}" font-size="${o.sz}" font-weight="${o.b ? 700 : 400}" fill="#${o.color || "000000"}" text-anchor="${anchor}"${o.cs ? ` letter-spacing="${o.cs}"` : ""} xml:space="preserve">${esc(t)}</text>`;
     }
   }
   return s + `</g>`;
@@ -1194,10 +1205,10 @@ function fitText(o) { let t = pdfText(o.t); if (o.maxW) while (t.length > 3 && m
 function opsPDF(doc, ops) {
   for (const o of ops) {
     if (o.k === "line") { doc.setDrawColor(...hex(o.color)); doc.setLineWidth(o.w || 0.6); doc.line(o.x1, o.y1, o.x2, o.y2); }
-    else if (o.k === "rect") { doc.setLineWidth(o.lw || 0.6); if (o.fill) doc.setFillColor(...hex(o.fill)); if (o.stroke) doc.setDrawColor(...hex(o.stroke)); doc.rect(o.x, o.y, o.w, o.h, o.fill && o.stroke ? "FD" : o.fill ? "F" : "S"); }
+    else if (o.k === "rect") { doc.setLineWidth(o.lw || 0.6); if (o.fill) doc.setFillColor(...hex(o.fill)); if (o.stroke) doc.setDrawColor(...hex(o.stroke)); const st = o.fill && o.stroke ? "FD" : o.fill ? "F" : "S"; if (o.r) doc.roundedRect(o.x, o.y, o.w, o.h, o.r, o.r, st); else doc.rect(o.x, o.y, o.w, o.h, st); }
     else if (o.k === "img") doc.addImage(o.src, o.fmt || "JPEG", o.x, o.y, o.w, o.h);
     else if (o.k === "qr") { const q = qrMatrix(o.text, o.ec, o.mode), n = q.getModuleCount(), c = o.size / n; doc.setFillColor(0, 0, 0); for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) doc.rect(o.x + k * c, o.y + r * c, c + 0.05, c + 0.05, "F"); }
-    else if (o.k === "text") { doc.setFont("helvetica", o.b ? "bold" : "normal"); doc.setFontSize(o.sz); doc.setTextColor(...hex(o.color)); doc.text(fitText(o), o.x, o.y, { align: o.align || "left" }); }
+    else if (o.k === "text") { doc.setFont("helvetica", o.b ? "bold" : "normal"); doc.setFontSize(o.sz); doc.setTextColor(...hex(o.color)); doc.text(fitText(o), o.x, o.y, Object.assign({ align: o.align || "left" }, o.cs ? { charSpace: o.cs } : {})); }
   }
   doc.setTextColor(0); doc.setDrawColor(0);
 }
@@ -1234,64 +1245,72 @@ function bundleRows(items, coverPages) {
   });
   return rows;
 }
-const COVER_ROWS_FIRST = 16, COVER_ROWS_NEXT = 30;
+const COVER_ROWS_FIRST = 14, COVER_ROWS_NEXT = 30;
 function coverPageCount(n) { return n <= COVER_ROWS_FIRST ? 1 : 1 + Math.ceil((n - COVER_ROWS_FIRST) / COVER_ROWS_NEXT); }
+/* cover page in the house style of the WPN apps (as the ClaimPack cover): double rule, spaced caption,
+   the month in large type, three figure boxes, a details box and the contents table. Black on white for printing. */
 function coverOps(items) {
   const W = 595.28, H = 841.89, M = 48, CW = W - 2 * M, nCover = coverPageCount(bundleRows(items, 1).length);
   const rows = bundleRows(items, nCover), totalPages = nCover + rows.reduce((a, r) => a + r.pages, 0);
   const [by, bm] = (S.bundle.month || "").split("-").map(Number), claim = by ? `${MONTHS[bm - 1]} ${by}` : "";
-  const today = new Date(), dateTxt = today.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
-  const logo = EMBED.bin["templates/logo.jpeg"] ? "data:image/jpeg;base64," + EMBED.bin["templates/logo.jpeg"] : LOGO_DATAURL;
-  const url = appUrl(), pagesOps = [];
+  const today = new Date(), dateTxt = today.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const sumH = rows.reduce((a, r) => a + (Number(r.hrs) || 0), 0), sumO = rows.reduce((a, r) => a + (Number(r.ot) || 0), 0);
+  const title = cfg().projectTitle || PK.name || "", url = appUrl(), pagesOps = [], INK = "14212B", MUT = "596873", RULE = "C9D1D7";
   const cols = [["No", 24, "left"], ["Name", 140, "left"], ["Designation", 112, "left"], ["Month", 64, "left"], ["Normal hrs", 46, "right"], ["OT hrs", 38, "right"], ["Pages", 35, "right"], ["Page", 40, "right"]];
   let idx = 0;
   for (let pgi = 0; pgi < nCover; pgi++) {
-    const ops = [], T = (t, x, y, sz = 9, b = 0, color = "14212B", align = "left", maxW) => ops.push({ k: "text", t: String(t ?? ""), x, y, sz, b, color, align, maxW });
-    // letterhead
-    if (logo) ops.push({ k: "img", src: logo, x: M, y: 38, w: 38, h: 45 });
-    T(PK.company || "", M + 48, 56, 14, 1, "17365D", "left", CW - 48);
-    T(cfg().projectTitle ? `PROJECT : ${cfg().projectTitle}` : "", M + 48, 72, 8, 0, "333333", "left", CW - 48);
-    ops.push({ k: "line", x1: M, y1: 92, x2: W - M, y2: 92, w: 1.4, color: "14212B" });
+    const ops = [], T = (t, x, y, sz = 9, b = 0, color = INK, align = "left", maxW, cs) => ops.push({ k: "text", t: String(t ?? ""), x, y, sz, b, color, align, maxW, cs });
+    const L = (x1, y1, x2, y2, w = 0.5, color = RULE) => ops.push({ k: "line", x1, y1, x2, y2, w, color });
+    L(M, 46, W - M, 46, 2.2, INK); L(M, 50.5, W - M, 50.5, 0.7, INK);
     let y;
     if (pgi === 0) {
-      T("TIMESHEET SUBMISSION", M, 128, 18, 1); T(claim ? `For the month of ${claim}` : "", M, 146, 11, 0, "333333");
-      // details box
-      const bx = M, byy = 162, bh = 66; ops.push({ k: "rect", x: bx, y: byy, w: CW, h: bh, stroke: "9AA5AD", lw: 0.6 });
-      ops.push({ k: "line", x1: bx + CW / 2, y1: byy, x2: bx + CW / 2, y2: byy + bh, w: 0.4, color: "C9D1D7" });
-      [[["Project", S.pkg], ["Submitted to", PK.submitTo || "HQ"]], [["Compiled by", S.bundle.by || ""], ["Date", dateTxt]], [["Timesheets", String(rows.length)], ["Total pages", String(totalPages)]]].forEach((pair, r) => {
-        pair.forEach(([l, v], c) => { const x = bx + 10 + c * CW / 2, yy = byy + 18 + r * 19; T(l, x, yy, 8.5, 0, "596873"); T(v, x + 72, yy, 9.5, 1, "14212B", "left", CW / 2 - 90); });
-        if (r < 2) ops.push({ k: "line", x1: bx, y1: byy + 25 + r * 19, x2: bx + CW, y2: byy + 25 + r * 19, w: 0.3, color: "E1E6EA" });
+      T("MONTHLY TIMESHEET SUBMISSION", M, 84, 8.5, 1, MUT, "left", CW, 2.2);
+      T(claim ? claim.toUpperCase() : "TIMESHEETS", M, 118, 30, 1);
+      T([S.pkg, title].filter(Boolean).join("  ·  "), M, 142, 12.5, 1, INK, "left", CW);
+      T(`Submitted to ${PK.submitTo || "HQ"}${S.bundle.by ? `   |   Compiled by ${S.bundle.by}` : ""}`, M, 160, 9.5, 0, MUT, "left", CW);
+      L(M, 180, W - M, 180, 0.8, INK);
+      const cw = (CW - 20) / 3;
+      [["TIMESHEETS", String(rows.length)], ["NORMAL HOURS", sumH ? fmt1(sumH) : "—"], ["OVERTIME HOURS", fmt1(sumO)]].forEach(([l, v], c) => {
+        const x = M + c * (cw + 10); ops.push({ k: "rect", x, y: 196, w: cw, h: 58, r: 5, stroke: c ? RULE : INK, lw: c ? 0.8 : 1.4 });
+        T(l, x + 14, 214, 7, 1, MUT, "left", cw - 20, 0.5); T(v, x + 14, 239, 16, 1);
       });
-      T("LIST OF TIMESHEETS", M, 254, 10, 1); y = 264;
-    } else { T("LIST OF TIMESHEETS (continued)", M, 120, 10, 1); y = 130; }
-    // table
-    ops.push({ k: "rect", x: M, y, w: CW, h: 20, fill: "E8ECEF" });
-    let x = M; cols.forEach(([h, w, a]) => { T(h, a === "right" ? x + w - 5 : x + 5, y + 13.5, 8, 1, "14212B", a); x += w; });
+      T("Submission details", M, 284, 11, 1);
+      ops.push({ k: "rect", x: M, y: 294, w: CW, h: 92, r: 5, stroke: RULE, lw: 0.8 });
+      [[["PROJECT / CONTRACT", title || "—"], ["SUBMITTED TO", PK.submitTo || "HQ"]], [["PREPARED ON", dateTxt], ["TOTAL PAGES", `${totalPages} (cover ${nCover})`]]].forEach((col, c) =>
+        col.forEach(([l, v], r) => { const x = M + 14 + c * CW / 2, yy = 314 + r * 40; T(l, x, yy, 6.8, 0, MUT, "left", CW / 2 - 28, 0.4); T(v, x, yy + 14, 9.5, 1, INK, "left", CW / 2 - 28); }));
+      T("List of timesheets", M, 412, 11, 1); y = 422;
+    } else {
+      T(`MONTHLY TIMESHEET SUBMISSION${claim ? " · " + claim.toUpperCase() : ""}`, M, 84, 8.5, 1, MUT, "left", CW, 2.2);
+      T("List of timesheets (continued)", M, 112, 11, 1); y = 124;
+    }
+    // contents table
+    L(M, y, W - M, y, 1.2, INK); ops.push({ k: "rect", x: M, y: y + 0.6, w: CW, h: 19.4, fill: "F0F2F4" });
+    let x = M; cols.forEach(([h, w, a]) => { T(h, a === "right" ? x + w - 5 : x + 5, y + 13.5, 8, 1, INK, a); x += w; });
     y += 20;
     const take = pgi === 0 ? COVER_ROWS_FIRST : COVER_ROWS_NEXT;
     for (let k = 0; k < take && idx < rows.length; k++, idx++) {
       const r = rows[idx]; x = M;
-      [r.no, r.who || "—", r.desig, r.month || claim.replace(/^([A-Za-z]{3})[a-z]*/, "$1"), r.hrs ? r.hrs + (r.edited ? "*" : "") : "—", r.ot ? r.ot + (r.edited ? "*" : "") : "—", r.pages, r.from].forEach((v, ci) => { const [, w, a] = cols[ci]; T(v, a === "right" ? x + w - 5 : x + 5, y + 12.5, 8.5, ci === 1 ? 1 : 0, "14212B", a, w - 8); x += w; });
-      ops.push({ k: "line", x1: M, y1: y + 18, x2: W - M, y2: y + 18, w: 0.4, color: "C9D1D7" }); y += 18;
+      [r.no, r.who || "—", r.desig, r.month || claim.replace(/^([A-Za-z]{3})[a-z]*/, "$1"), r.hrs ? r.hrs + (r.edited ? "*" : "") : "—", r.ot ? r.ot + (r.edited ? "*" : "") : "—", r.pages, r.from].forEach((v, ci) => { const [, w, a] = cols[ci]; T(v, a === "right" ? x + w - 5 : x + 5, y + 12.5, 8.5, ci === 1 ? 1 : 0, INK, a, w - 8); x += w; });
+      L(M, y + 18, W - M, y + 18, 0.4); y += 18;
     }
     if (idx >= rows.length) {
-      const sumH = rows.reduce((a, r) => a + (Number(r.hrs) || 0), 0), sumO = rows.reduce((a, r) => a + (Number(r.ot) || 0), 0);
-      ops.push({ k: "rect", x: M, y, w: CW, h: 19, fill: "F3F5F7" });
+      L(M, y, W - M, y, 1, INK);
       T("Total", M + 29, y + 13, 8.5, 1); x = M + 24 + 140 + 112 + 64;
-      T(sumH ? fmt1(sumH) : "—", x + 46 - 5, y + 13, 8.5, 1, "14212B", "right"); T(sumO ? fmt1(sumO) : "—", x + 46 + 38 - 5, y + 13, 8.5, 1, "14212B", "right");
-      T(rows.reduce((a, r) => a + r.pages, 0), x + 46 + 38 + 35 - 5, y + 13, 8.5, 1, "14212B", "right");
-      y += 19;
-      T(`Hours are from the team timesheets in the app or the summary QR on the page${rows.some(r => r.edited) ? "; * entered by the compiler from the signed copy" : ""}. The signed copies attached are the record.`, M, y + 14, 7.5, 0, "596873", "left", CW);
+      T(sumH ? fmt1(sumH) : "—", x + 46 - 5, y + 13, 8.5, 1, INK, "right"); T(sumO ? fmt1(sumO) : "—", x + 46 + 38 - 5, y + 13, 8.5, 1, INK, "right");
+      T(`${rows.reduce((a, r) => a + r.pages, 0)} pages`, x + 46 + 38 + 35 + 40 - 5, y + 13, 8.5, 1, INK, "right");
+      L(M, y + 19, W - M, y + 19, 1, INK); y += 19;
+      T(`Hours are from the team timesheets in the app or the summary QR on each page${rows.some(r => r.edited) ? "; * entered by the compiler from the signed copy" : ""}.`, M, y + 14, 7.5, 0, MUT, "left", CW - 70);
       const miss = missingFromScans(items);
-      if (miss.length) T(`Pending, not in this submission: ${miss.map(d => d.profile.name).join(", ")}`, M, y + 28, 8, 1, "9A5B00", "left", CW);
+      if (miss.length) T(`Pending, not in this submission: ${miss.map(d => d.profile.name).join(", ")}`, M, y + 28, 8, 1, "9A5B00", "left", CW - 70);
     }
-    // footer: app QR and credit
-    ops.push({ k: "line", x1: M, y1: 770, x2: W - M, y2: 770, w: 0.5, color: "C9D1D7" });
-    let fx = M;
-    if (url) { ops.push({ k: "qr", text: url, x: M, y: 777, size: 44 }); fx = M + 52; }
-    T(`Generated by ${APP_NAME} app v${APP_VERSION} · developed by ${APP_AUTHOR}`, fx, 790, 7.5, 1, "596873");
-    T(`${dateTxt}, ${today.toTimeString().slice(0, 5)} · generated digitally, no signature required${url ? " · scan the QR to open the app" : ""}`, fx, 802, 7.5, 0, "596873", "left", W - M - fx);
-    if (url) T(url, fx, 814, 7, 0, "8A97A1", "left", CW - 120);
+    // bottom right: credit and the app QR; running footer line
+    const qx = W - M - 52, tx = url ? qx - 8 : W - M;
+    if (url) { ops.push({ k: "qr", text: url, x: qx, y: 742, size: 52 }); T("Scan to use the app", tx, 790, 6.5, 0, "8A97A1", "right"); }
+    T(`Prepared ${dateTxt} with ${APP_NAME} (developed by ${APP_AUTHOR}).`, tx, 762, 7.5, 0, MUT, "right");
+    T("Generated digitally, no signature needed. The signed copies attached are the record.", tx, 774, 7.5, 0, MUT, "right");
+    L(M, 812, W - M, 812, 0.5);
+    T(`Timesheets${claim ? " · " + claim : ""}${S.pkg ? " · " + S.pkg : ""}`, M, 832, 7, 0, MUT);
+    T(`${APP_NAME} · ${APP_AUTHOR}`, W / 2, 832, 7, 0, "8A97A1", "center");
     pagesOps.push(ops);
   }
   return { pages: pagesOps, W, H, rows, totalPages, claim };
@@ -1334,10 +1353,10 @@ async function buildBundlePDF() {
   const out = await PDFDocument.create();
   const font = await out.embedFont(StandardFonts.Helvetica);
   const A4 = [595.28, 841.89];
-  let claim = "";
+  let claim = "", nCov = 0;
   if (S.bundle.cover !== false) {
     if (!LOGO_DATAURL) await logoDataURL("templates/logo.jpeg");
-    const cv = coverOps(items); claim = cv.claim;
+    const cv = coverOps(items); claim = cv.claim; nCov = cv.pages.length;
     const doc = new jspdf.jsPDF({ unit: "pt", format: "a4", orientation: "portrait", compress: true });
     cv.pages.forEach((ops, i) => { if (i) doc.addPage("a4", "portrait"); opsPDF(doc, ops); });
     const src = await PDFDocument.load(doc.output("arraybuffer"));
@@ -1369,7 +1388,7 @@ async function buildBundlePDF() {
   // page numbers at the foot of every page (optional), the right way up on turned pages
   const n = out.getPageCount(), ref = `${S.pkg} · Timesheets ${claim}`;
   if (showFooter()) out.getPages().forEach((p, i) => {
-    const t = `${ref} · Page ${i + 1} of ${n}`, tw = font.widthOfTextAtSize(t, 7);
+    const t = i < nCov ? `Page ${i + 1} of ${n}` : `${ref} · Page ${i + 1} of ${n}`, tw = font.widthOfTextAtSize(t, 7);
     p.drawText(t, Object.assign(footerAt(p, tw), { size: 7, font, color: rgb(0.45, 0.45, 0.45) }));
   });
   out.setTitle(`Timesheet submission ${claim}`); out.setCreator(`${APP_CREDIT} (v${APP_VERSION})`);
@@ -1424,7 +1443,8 @@ async function loadTeamFiles(files) {
   for (const f of files) {
     try {
       const d = JSON.parse(await f.text());
-      if (d.kind !== "ts-data" || !d.md || !d.month) throw new Error("not a timesheet data file");
+      if (d.kind !== "ts-data") throw new Error("not a timesheet data file");
+      checkRecord(d);
       const i = team.findIndex(x => x.profile.name === d.profile.name && x.month === d.month);
       if (i >= 0) team[i] = d; else team.push(d); n++;
     } catch (e) { toast(`${f.name}: ${e.message}`); }
@@ -1436,7 +1456,7 @@ async function loadTeamFiles(files) {
 
 /* ================================================================
    ROLES, SIGNATURE PIN, SIGNATURE CHECK
-   Role: staff (default) · compiler (HQ submission) · re (also signs as Verified by PYKP).
+   Role: staff (default) · compiler (HQ submission) · re (also signs on the RE's verification line).
    PIN: asked each time a saved signature is put on a timesheet (kept as a hash on this phone).
    Check: a signature records a fingerprint of the hours; if the hours change afterwards,
    the signature is not printed until signed again.
@@ -1908,7 +1928,21 @@ async function decodeQRFromCanvas(cv) {
   const r = jsQR(id.data, cv.width, cv.height, { inversionAttempts: "dontInvert" });
   return r ? r.data : null;
 }
+/* a timesheet from a QR, a data file or a backup: check its shape before it is used */
+function checkRecord(d) {
+  if (!d || typeof d !== "object" || !d.profile || typeof d.profile !== "object") throw new Error("not a timesheet");
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(String(d.month || ""))) throw new Error("month missing or not valid");
+  const name = String(d.profile.name || "").trim(); if (!name) throw new Error("name missing");
+  if (!d.md || !Array.isArray(d.md.rows) || d.md.rows.length !== 5) throw new Error("days missing or not valid");
+  const clip = (v, n) => String(v == null ? "" : v).slice(0, n);
+  d.profile.name = clip(name, 120); ["status", "sigName", "sigDesig"].forEach(k => { if (k in d.profile) d.profile[k] = clip(d.profile[k], 120); });
+  d.pkg = /^[A-Za-z0-9_-]{1,16}$/.test(String(d.pkg || "")) ? String(d.pkg).toUpperCase() : "";
+  d.md.rows.forEach(r => { if (!r || typeof r !== "object") throw new Error("days not valid"); r.v = r.v && typeof r.v === "object" ? r.v : {};
+    Object.keys(r.v).forEach(k => { if (!/^([1-9]|[12]\d|3[01])$/.test(k)) delete r.v[k]; else r.v[k] = clip(r.v[k], 8); }); r.rem = clip(r.rem, 60); r.stage = clip(r.stage, 4); });
+  return d;
+}
 function addTeamRecord(d) {
+  checkRecord(d);
   const i = team.findIndex(x => x.profile.name === d.profile.name && x.month === d.month);
   if (i >= 0) team[i] = d; else team.push(d);
   team.sort((a, b) => a.month.localeCompare(b.month) || a.profile.name.localeCompare(b.profile.name));
@@ -2200,7 +2234,7 @@ async function signMine() {
 }
 /* RE signing: RE role only, needs a saved signature and a PIN, asks the PIN once per batch */
 async function reSign(list) {
-  if (!roleIs("re")) { toast("Only the RE role can sign under Verified by PYKP (Setup → Your role)."); return; }
+  if (!roleIs("re")) { toast("Only the RE role can sign on the RE's verification line (Setup → Your role)."); return; }
   if (!S.mySig) return askMySignature(() => reSign(list));
   if (!S.sigPin) return setPin(() => reSign(list));
   if (!(await askPin("PIN to sign as RE"))) return;
@@ -2315,7 +2349,7 @@ function openSigAdjust(base) {
   sh.md.sig = { prep: { sig: (cur.prep && cur.prep.sig) || S.mySig || SAMPLE_SIG }, v1: { sig: (cur.v1 && cur.v1.sig) || S.mySig || SAMPLE_SIG, name: cur.v1 && cur.v1.name, title: cur.v1 && cur.v1.title } };
   let sel = "prep";
   genSheet("Adjust signatures", `${lay === "side" ? "Side-by-side" : "Original form"} layout · drag a signature, or use the buttons`, `
-    <div class="seg" id="sa-pick"><button type="button" data-k="prep">Prepared by</button><button type="button" data-k="v1">Verified by PYKP (RE)</button></div>
+    <div class="seg" id="sa-pick"><button type="button" data-k="prep">Prepared by</button><button type="button" data-k="v1">Verified by (RE)</button></div>
     <div id="sa-host" style="background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none"></div>
     <div class="grid">
       <div class="span2"><label class="lbl" for="sa-size">Size</label><input type="range" id="sa-size" min="50" max="170" step="5" style="width:100%"></div>
@@ -2364,7 +2398,7 @@ function openWelcome() {
     <div><label class="lbl" for="w-status">Status</label><input type="text" id="w-status" placeholder="e.g. Assistant Resident Engineer" list="status-list" value="${esc(S.profile.status)}"></div>
     <div><span class="lbl">Code no. and stage code</span><div class="seg codes" id="w-code">${codes.map(x => `<button type="button" data-c="${x.code}" aria-pressed="${x.code === code}" title="${esc(x.name)}">${x.code}</button>`).join("")}</div><div class="seghint" id="w-code-h"></div></div>
     <div><span class="lbl">Your role</span><div class="seg" id="w-role">${Object.entries(ROLE_NAMES).map(([k, l]) => `<button type="button" data-r="${k}" aria-pressed="${k === role}">${l}</button>`).join("")}</div>
-      <p class="small muted" style="margin:6px 0 0"><b>Staff</b>: your own timesheet. <b>Compiler</b>: also collects the team's and makes the HQ PDF. <b>RE</b>: as Compiler, and can sign under <i>Verified by PYKP</i> if digital signature is used.</p></div>
+      <p class="small muted" style="margin:6px 0 0"><b>Staff</b>: your own timesheet. <b>Compiler</b>: also collects the team's and makes the HQ PDF. <b>RE</b>: as Compiler, and can sign on the RE's <i>Verified by</i> line if digital signature is used.</p></div>
     <button class="btn acc" type="button" id="w-go">Start</button>`);
   const hint = () => { $("#w-code-h").textContent = `${code}${codeName(code) ? " · " + codeName(code) : ""}`; $$("#w-code button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === code)); };
   hint();
@@ -2572,7 +2606,7 @@ async function openPageCheck(id) {
   const cur = () => Object.assign({}, it, { prot, qrMode });
   const tview = async k => isPdf ? pageThumb(thumbs[k], prot[k], hideQR() ? coverBoxFor(cur(), k) : null) : thumbs[k] || "";
   const qrLine = k => { const found = !!(it.qrb || [])[k], on = qrMode[k] === "off" ? false : found || qrMode[k] === "manual";
-    return `<label class="small" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" data-pqr="${k}" ${on ? "checked" : ""} style="margin-top:2px"><span><b>Cover QR</b> <span class="muted">${found ? "· QR found on this page" : "· none found. Tick to blank the usual QR corner"}</span></span></label>`; };
+    return `<label class="small" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" data-pqr="${k}" ${on ? "checked" : ""} style="margin-top:2px"><span><b>Cover QR</b> <span class="muted">${found ? "(QR found)" : "(none found: tick to blank the usual QR corner)"}</span></span></label>`; };
   const views = []; for (let k = 0; k < it.pages; k++) views.push(await tview(k));
   const VIA = { qr: "from the QR", name: "name read", order: "print order: check", unsure: "not sure: check" };
   genSheet("Check pages", `${esc(it.name)} · ${it.pages} page${it.pages > 1 ? "s" : ""}`, `
@@ -2720,7 +2754,7 @@ async function renderHQ() {
     return `<tr><td>${esc(d.profile.name)}<div class="small muted">${esc(d.profile.status || "")}${t.empty.length ? ` · <span style="color:var(--warn)">${t.empty.length} blank</span>` : ""}</div>
       <div class="small">${sg.prep ? (sigValid(sg.prep, d.md) ? '<span class="tag ok">Signed</span>' : '<span class="tag need">Changed after signing</span>') : d.prepImage ? '<span class="tag need">Signed (photo, not in QR)</span>' : ""} ${sg.v1 ? (!sigValid(sg.v1, d.md) ? '<span class="tag need">Changed after RE signed</span>' : '<span class="tag ok">RE signed</span>') : ""}</div></td>
       <td>${MONTHS[sh.m].slice(0, 3)} ${sh.y}</td><td class="n">${fmt1(t.rowSum[0])}</td><td class="n">${fmt1(t.ot)}</td>
-      <td style="white-space:nowrap">${roleIs("re") && S.digiSign ? `<button class="btn sm" type="button" data-tsign="${i}" title="${sg.v1 ? "Remove RE signature" : "Sign as RE (Verified by PYKP)"}">${sg.v1 ? "Unsign" : "Sign"}</button> ` : ""}<button class="btn sm" type="button" data-tdel="${i}" aria-label="Remove">✕</button></td></tr>`;
+      <td style="white-space:nowrap">${roleIs("re") && S.digiSign ? `<button class="btn sm" type="button" data-tsign="${i}" title="${sg.v1 ? "Remove RE signature" : "Sign as RE"}">${sg.v1 ? "Unsign" : "Sign"}</button> ` : ""}<button class="btn sm" type="button" data-tdel="${i}" aria-label="Remove">✕</button></td></tr>`;
   }).join("")}</tbody></table>` : "";
 }
 
@@ -2747,6 +2781,7 @@ function feedbackUrl() {
 }
 /* the guide and the change list on GitHub: from the app's address (account.github.io/repo/), or repoUrl in packages/index.json */
 function docUrl(file) {
+  if (location.protocol.startsWith("http") && /\.github\.io$/i.test(location.hostname)) return file.replace(/\.md$/, ".html");   // the docs site (Jekyll theme) next to the app
   const r = (INDEX && INDEX.repoUrl || "").replace(/\/+$/, "");
   if (r) return `${r}/blob/main/${file}`;
   const m = /^([a-z0-9-]+)\.github\.io$/i.exec(location.hostname), repo = location.pathname.split("/").filter(Boolean)[0];
@@ -2758,16 +2793,34 @@ function openHelp() {
   genSheet("Help", `${APP_NAME} v${APP_VERSION} ${APP_STAGE}`, `<div class="helplist">
     <a href="${esc(docUrl("GUIDE.md"))}" target="_blank" rel="noopener"><b>User guide</b><span>Step by step with pictures: key in, print, sign, scan, HQ submission.</span></a>
     <button type="button" id="h-new"><b>What's new in v${APP_VERSION}</b><span>The latest changes, and the full list.</span></button>
+    <button type="button" id="h-share"><b>Share this app</b><span>Show a QR code that opens the app on a colleague's phone, or copy the link.</span></button>
     <a href="${esc(feedbackUrl())}" target="_blank" rel="noopener"><b>Send feedback</b><span>A problem or an idea, on WhatsApp. The app version and your phone type are filled in.</span></a>
   </div>
   <div class="rgrow" style="margin-top:10px"><b style="font-size:15px">Month-end in 5 steps</b><ol class="steps small" style="margin:4px 0 0">
     <li><span><b>Fill month</b>, then tap the days that were different (leave, MC, overtime).</span></li>
     <li><span><b>Print / PDF</b>: print on A4 at actual size.</span></li>
-    <li><span>Sign and stamp by hand; get the PYKP and SOR verification.</span></li>
+    <li><span>Sign and stamp by hand; get the RE and SOR verification.</span></li>
     <li><span><b>Scan signed copy</b> to keep it on your phone.</span></li>
     <li><span>Hand in the hardcopy, and <b>Show QR</b> to the compiler if asked.</span></li></ol></div>
   <p class="small muted" style="text-align:center;margin:10px 0 0">Developed by ${APP_AUTHOR} · Everything stays on this phone</p>`);
   $("#h-new").onclick = openWhatsNew;
+  $("#h-share").onclick = openShareApp;
+}
+/* Help > Share this app: the app's web address as a QR code, to scan from another phone */
+function openShareApp() {
+  const url = appUrl();
+  genSheet("Share this app", "Ask a colleague to scan this with the phone camera.", url
+    ? `<div style="text-align:center;display:grid;gap:10px;justify-items:center">
+        <div class="qrbig" style="width:240px" id="sa-qr"></div>
+        <p class="small mono" style="word-break:break-all;margin:0">${esc(url)}</p>
+        <div class="btns" style="justify-content:center"><button class="btn sm" type="button" id="sa-copy">Copy link</button>${navigator.share ? `<button class="btn sm acc" type="button" id="sa-share">Send link…</button>` : ""}</div>
+        <p class="small muted" style="margin:0">iPhone: Safari → Share → <i>Add to Home Screen</i>. Android: Chrome ⋮ → <i>Install app</i>. After the first open the app also works without signal.</p>
+      </div>`
+    : `<p class="small muted">The QR code is shown when the app is opened from its web address, not from a saved file.</p>`);
+  if (!url) return;
+  try { const q = qrcode(0, "M"); q.addData(url); q.make(); $("#sa-qr").innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) {}
+  $("#sa-copy").onclick = async () => { try { await navigator.clipboard.writeText(url); toast("Link copied."); } catch (e) { toast(url); } };
+  if ($("#sa-share")) $("#sa-share").onclick = () => navigator.share({ title: APP_NAME, text: `${APP_NAME}: monthly timesheets`, url }).catch(() => {});
 }
 function openWhatsNew() {
   genSheet(`What's new in v${APP_VERSION}`, APP_STAGE === "beta" ? "Beta: thank you for testing." : "", `<ul class="small" style="display:grid;gap:8px;padding-left:18px;margin:0">${WHATS_NEW.map(t => `<li>${esc(t)}</li>`).join("")}</ul>
@@ -2820,7 +2873,7 @@ function openSetup() {
     <div class="rgrow"><b style="font-size:16px">Feedback</b><span class="s">Found a problem or have an idea? Send it on WhatsApp. The app version and your phone type are filled in for you.</span>
       <div class="btns"><a class="btn acc" id="s-feedback" href="${esc(feedbackUrl())}" target="_blank" rel="noopener">Send feedback on WhatsApp</a></div></div>
     <div class="rgrow"><b style="font-size:16px">Your role</b><div class="seg" id="s-role">${Object.entries(ROLE_NAMES).map(([k, l]) => `<button type="button" data-r="${k}" aria-pressed="${(S.role || "staff") === k}">${l}</button>`).join("")}</div>
-      <span class="s"><b>Staff</b>: your own timesheet. <b>Compiler</b>: also HQ submission. <b>RE</b>: can also sign under <i>Verified by PYKP</i> when digital signature is on (with a PIN).</span>
+      <span class="s"><b>Staff</b>: your own timesheet. <b>Compiler</b>: also HQ submission. <b>RE</b>: can also sign on the RE's <i>Verified by</i> line when digital signature is on (with a PIN).</span>
 </div>
     <details class="more"><summary>Digital signature (optional)</summary><div style="display:grid;gap:10px">
       <div class="capopts"><label><input type="checkbox" id="s-digi" ${S.digiSign ? "checked" : ""}> Use a digital signature. Leave off to sign the printed timesheet by hand (normal).</label></div>
@@ -2828,7 +2881,7 @@ function openSetup() {
       <div class="btns"><button class="btn sm pri" type="button" id="s-mysig">${S.mySig ? "Change or remove" : "Set up my signature"}</button>${S.mySig ? `<button class="btn sm" type="button" id="s-pin">${S.sigPin ? "Change PIN" : "Set a PIN"}</button>` : ""}<button class="btn sm" type="button" id="s-sigadj">Adjust position</button></div>
     </div></details>
     <details class="more"><summary>Signature block</summary><div class="grid">
-      <div class="span2"><label class="lbl" for="s-layout">Layout</label><select id="s-layout"><option value="form" ${c.signLayout !== "side" ? "selected" : ""}>As the original form (stacked)</option><option value="side" ${c.signLayout === "side" ? "selected" : ""}>Side by side: PYKP (RE) beside the SOR, more room for stamps</option></select></div>
+      <div class="span2"><label class="lbl" for="s-layout">Layout</label><select id="s-layout"><option value="form" ${c.signLayout !== "side" ? "selected" : ""}>As the original form (stacked)</option><option value="side" ${c.signLayout === "side" ? "selected" : ""}>Side by side: RE beside the SOR, more room for stamps</option></select></div>
       <div><label class="lbl" for="s-v1n">${esc(c.signLabels.verify1)} · name</label><input type="text" id="s-v1n" value="${esc(V.v1Name)}" placeholder="Blank: written by hand"></div>
       <div><label class="lbl" for="s-v1t">Title</label><input type="text" id="s-v1t" value="${esc(V.v1Title)}"></div>
       <div><label class="lbl" for="s-v2n">${esc(c.signLabels.verify2)} (SOR) · name</label><input type="text" id="s-v2n" value="${esc(V.v2Name)}" placeholder="Blank: written by hand"></div>
@@ -3046,7 +3099,7 @@ function wire() {
     const b = e.target.closest("[data-tdel]"); if (b) { team.splice(Number(b.dataset.tdel), 1); saveTeam(); renderHQ(); return; }
     const sg = e.target.closest("[data-tsign]"); if (sg) { const d = team[Number(sg.dataset.tsign)]; const on = !(d.md.sig && d.md.sig.v1); if (!on) { signAsRE(d, false); saveTeam(); renderHQ(); return; } reSign([d]); }
   });
-  $("#t-signall").onclick = () => { if (!team.length) return toast("Scan or load the team's timesheets first."); const todo = team.filter(d => !(d.md.sig && sigValid(d.md.sig.v1, d.md))); if (!todo.length) return toast("All are signed already."); if (confirm(`Put your signature under "Verified by PYKP" on ${todo.length} timesheet${todo.length > 1 ? "s" : ""}?`)) reSign(todo); };
+  $("#t-signall").onclick = () => { if (!team.length) return toast("Scan or load the team's timesheets first."); const todo = team.filter(d => !(d.md.sig && sigValid(d.md.sig.v1, d.md))); if (!todo.length) return toast("All are signed already."); if (confirm(`Put your signature on the RE's "Verified by" line on ${todo.length} timesheet${todo.length > 1 ? "s" : ""}?`)) reSign(todo); };
   $("#b-list").addEventListener("click", e => { const c = e.target.closest("[data-pcheck]"); if (c) openPageCheck(c.dataset.pcheck); });
   $("#b-list").addEventListener("click", async e => { const o = e.target.closest("[data-border]"); if (!o) return; const it = await DB.get(o.dataset.border); it.labels = Array.from({ length: it.pages }, (_, k) => team[k] ? { who: team[k].profile.name, ym: team[k].month, pkg: team[k].pkg } : null); await DB.put(it); renderHQ(); toast("Pages matched to the team list in order. Check them under Pages."); });
   $("#t-clear").onclick = () => { if (team.length && confirm("Remove all team timesheets from the list?")) { team = []; saveTeam(); renderHQ(); } };
@@ -3067,12 +3120,57 @@ function wire() {
     const t = e.target.closest("[data-phtoggle]");
     if (t) { const d = t.dataset.phtoggle, c = S.customPH[S.pkg] = S.customPH[S.pkg] || {}; if (d in c) delete c[d]; else c[d] = null; save(); openSetup(); render(); }
   });
-  $("#f-restore").addEventListener("change", async e => {
-    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-    try { const d = JSON.parse(await f.text()); if (d.kind !== "ts-backup") throw new Error("not a Timesheet backup");
-      if (!confirm("Replace the timesheets on this phone with the backup?")) return; S = Object.assign(S, d.S); team = d.team || []; save(); saveTeam(); await loadPackage(S.pkg); closeSheet("#sh-gen"); render(); toast("Backup restored."); }
-    catch (err) { alert("Could not restore: " + err.message); }
-  });
+  $("#f-restore").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); });
+  wireDrop();
+}
+
+/* ---------------------------------------------------------------- backup restore, drag and drop */
+async function restoreBackup(f, parsed) {
+  try {
+    const d = parsed || JSON.parse(await f.text());
+    if (!d || d.kind !== "ts-backup" || !d.S || typeof d.S !== "object") throw new Error("not a Timesheet backup");
+    if (d.S.months && typeof d.S.months !== "object") throw new Error("the months in the file are not valid");
+    const tm = Array.isArray(d.team) ? d.team.filter(x => { try { checkRecord(x); return true; } catch (e) { return false; } }) : [];
+    if (!confirm("Replace the timesheets on this phone with the backup?")) return;
+    S = Object.assign(S, d.S); team = tm; save(); saveTeam(); await loadPackage(S.pkg); closeSheet("#sh-gen"); render(); toast("Backup restored.");
+  } catch (err) { alert("Could not restore: " + err.message); }
+}
+/* on a computer: drop files onto the app. Where they go depends on the screen that is open */
+function wireDrop() {
+  const ov = $("#drop"); let depth = 0;
+  const hasFiles = e => [...((e.dataTransfer && e.dataTransfer.types) || [])].includes("Files");
+  const where = () => !$("#sh-bundle").hidden ? "bundle" : !$("#sh-team").hidden ? "team" : "main";
+  const say = () => { const w = where(), t = {
+      bundle: ["Drop to add to the HQ list", "The photocopier scan (PDF) or photos of the signed timesheets."],
+      team: ["Drop to add timesheets", "The timesheet data files (.json) from the team."],
+      main: ["Drop to save", `A photo or PDF of your signed timesheet for ${MONTHS[S.ui.m]} ${S.ui.y}, or a backup file to restore.`] }[w];
+    $("#drop-h").textContent = t[0]; $("#drop-p").textContent = t[1]; };
+  document.addEventListener("dragenter", e => { if (!hasFiles(e)) return; e.preventDefault(); if (depth++ === 0) { say(); ov.hidden = false; } });
+  document.addEventListener("dragover", e => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
+  document.addEventListener("dragleave", e => { if (!hasFiles(e)) return; if (--depth <= 0) { depth = 0; ov.hidden = true; } });
+  document.addEventListener("drop", e => { if (!hasFiles(e)) return; e.preventDefault(); depth = 0; ov.hidden = true; dropFiles([...e.dataTransfer.files], where()); });
+}
+async function dropFiles(files, where) {
+  const typed = f => f.type ? f : new File([f], f.name, { type: /\.pdf$/i.test(f.name) ? "application/pdf" : /\.png$/i.test(f.name) ? "image/png" : "image/jpeg" });
+  const docs = files.filter(f => /^image\/|^application\/pdf$/.test(f.type) || /\.(pdf|jpe?g|png|webp)$/i.test(f.name)).map(typed);
+  const json = files.filter(f => /json/.test(f.type) || /\.json$/i.test(f.name));
+  const skip = files.length - docs.length - json.length;
+  if (skip) toast(`${skip} file${skip > 1 ? "s" : ""} left out: only PDF, photos and .json files can be added.`);
+  if (json.length) {
+    const data = [];
+    for (const f of json) { let d; try { d = JSON.parse(await f.text()); } catch (e) { toast(`${f.name}: not a valid file`); continue; }
+      if (d && d.kind === "ts-backup") { await restoreBackup(f, d); return; }
+      data.push(f); }
+    if (data.length) {
+      if (!roleIs("compiler", "re")) toast("Timesheet data files are for the compiler (Setup → Your role).");
+      else { await loadTeamFiles(data); if ($("#sh-team").hidden) { renderHQ(); openSheet("#sh-team"); } }
+    }
+  }
+  if (docs.length) {
+    if (where === "bundle") await addBundle(docs);
+    else if (where === "team") toast("PDFs and photos go to Signed copies for HQ: open it, then drop them there.");
+    else await saveSigned(curYM(), docs);
+  }
 }
 
 /* ---------------------------------------------------------------- start */

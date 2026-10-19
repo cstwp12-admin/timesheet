@@ -5,7 +5,7 @@
 
 1. Default signature layout is the original form.
 2. A drawn signature signs "Prepared by"; it travels in the QR and comes back the same.
-3. The RE signs the team timesheets under "Verified by PYKP"; PDF and Excel carry both signatures.
+3. The RE signs the team timesheets on the RE's "Verified by" line; PDF and Excel carry both signatures.
 4. The team's timesheets are printed (no QR on the form), "photocopied" (rasterised, one page turned,
    grey, noisy) into one PDF, and the app reads the printed name on each page.
 """

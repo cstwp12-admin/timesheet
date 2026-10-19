@@ -1,0 +1,16 @@
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="README.html" aria-label="{{ site.title }} home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5" fill="#E9EDF0"/><path d="M3.5 9.5h17" stroke="#14212B" stroke-width="1.6"/><path d="M8 3v4M16 3v4" stroke="#E9EDF0" stroke-width="1.8" stroke-linecap="round"/><rect x="6.5" y="12" width="3" height="2.6" rx=".6" fill="#14212B"/><rect x="10.5" y="12" width="3" height="2.6" rx=".6" fill="#14212B"/><rect x="14.5" y="12" width="3" height="2.6" rx=".6" fill="#E8590C"/><rect x="6.5" y="15.6" width="3" height="2.6" rx=".6" fill="#14212B"/><rect x="10.5" y="15.6" width="3" height="2.6" rx=".6" fill="#14212B"/></svg>
+      <span>{{ site.title }}</span>
+    </a>
+    <button class="menu" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Site">
+      {%- for item in site.nav -%}
+      {%- assign src = item.url | replace: ".html", ".md" -%}
+      <a href="{{ item.url }}"{% if page.name == src %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      {%- endfor -%}
+      <a class="go" href="{{ site.app_url }}">Open the app</a>
+    </nav>
+  </div>
+</header>

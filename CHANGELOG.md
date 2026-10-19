@@ -2,6 +2,19 @@
 
 Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 
+## v0.9.9 beta – 19 October 2026
+
+- **Drag and drop on a computer.** Drop a photo or PDF of the signed timesheet on the main screen to save it for the month shown; drop the photocopier scan on **Signed copies for HQ**; drop the team's data files on **Team timesheets**; drop a backup file anywhere to restore it. A *Drop to …* box says where the files will go.
+- **New HQ cover page**, in the same style as the other WPN apps: *Monthly timesheet submission*, the month in large type, three boxes (timesheets, normal hours, overtime), the submission details, the list of timesheets with a total row, and the credit with a small app QR at the bottom right. Page numbers on the cover read *Page 1 of n*.
+- **Help → Share this app**: the app's web address as a QR code to scan from a colleague's phone, with *Copy link* and *Send link*. It is also still under Setup.
+- **Docs website**: README, user guide, what's new and roadmap are now web pages in the app's own style (navy bar, orange accent), with *Open the app* at the top. **Help** opens these pages.
+- **Easier to read**: the orange of buttons and links and the green of the *done* labels are a little darker (contrast for small text in sunlight).
+- **Safer import**: timesheets from a QR, a data file or a backup are checked (month, name, days) before they are used; anything else is refused with a message.
+- **Security header** in the app (content security policy): the app can load only its own files and the typeface.
+- Wording in the app and the guide no longer names any company: the RE's line is called *Verified by (RE)*.
+- **Third-party notices** for the open-source libraries in `lib/` (`THIRD-PARTY-NOTICES.md`); the licence now says the official form and letterhead belong to the organisation that issued them.
+- New automatic check `tests/test_drop_cover.py` (drag and drop, import checks, cover page).
+
 ## v0.9.8 beta – 17 October 2026
 
 - **QR covering on real copier scans**: when the QR on a rough photocopy cannot be read, the app now finds it by its look (a dense square block below the form), reads it again from a sharper render where possible, and blanks it. A stamp or text is not taken for a QR. **Check pages** shows *Cover QR (QR found)* per page, with a tick to blank the usual QR corner on a page where none was found.
@@ -38,11 +51,11 @@ Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 ## v0.9.4 beta – 14 October 2026
 
 - **No QR on the printed form** by default. Scanned pages are now matched by **reading the printed name** on each page (offline text recognition, `lib/tesseract/`), matched to the team list; pages it cannot read follow the print order. **Check pages** shows each page with the name as read and a team-name picker to confirm or correct. The data QR under the form is still available in Setup, off by default.
-- **RE key**: the RE's phone creates a key once (Setup → Your role); its public part goes in the project file (*Export project file*). Only the phone holding that key can take the RE role and sign under *Verified by PYKP*. Every RE signature carries a cryptographic signature over the name, month, hours and date; any phone shows it only if it checks out against the key in the project file. Needs the app opened from its web address (https).
+- **RE key**: the RE's phone creates a key once (Setup → Your role); its public part goes in the project file (*Export project file*). Only the phone holding that key can take the RE role and sign under *Verified by (RE)*. Every RE signature carries a cryptographic signature over the name, month, hours and date; any phone shows it only if it checks out against the key in the project file. Needs the app opened from its web address (https).
 
 ## v0.9.3 beta – 14 October 2026
 
-- **Roles** (Setup → Your role, also asked at first start): *Staff* (own timesheet), *Compiler* (also HQ submission), *RE* (also signs under *Verified by PYKP*). Only the RE role can sign as RE.
+- **Roles** (Setup → Your role, also asked at first start): *Staff* (own timesheet), *Compiler* (also HQ submission), *RE* (also signs under *Verified by (RE)*). Only the RE role can sign as RE.
 - **Signature PIN**: asked each time a saved signature is put on a timesheet; required for the RE role.
 - **Signature check**: each digital signature keeps a fingerprint of the hours. If the hours change after signing, the signature is not printed until signed again (also for signatures received in a QR).
 - **Adjust signature position**: drag each signature on the form and set its size (Print / PDF → *Adjust signature position*, or Setup). Saved per project and layout.
@@ -53,8 +66,8 @@ Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 
 ## v0.9.2 beta – 14 October 2026
 
-- **Signature block** back to the **original form** by default (everyone signs and stamps the hardcopy). Side by side (PYKP beside SOR, more room for stamps) remains an option in Setup. With the original form, the RE's and SOR's names print under their lines when set.
-- **Digital signature (optional)**: draw your signature on the screen or take a photo of it (Setup → My signature). **Sign** puts it on *Signature* (prepared by). A drawn signature travels in the QR to the RE; the RE taps **Sign** or **Sign all as RE** in HQ submission to sign under *Verified by PYKP*, with the RE's name and status. PDF and Excel both carry the signatures.
+- **Signature block** back to the **original form** by default (everyone signs and stamps the hardcopy). Side by side (RE beside SOR, more room for stamps) remains an option in Setup. With the original form, the RE's and SOR's names print under their lines when set.
+- **Digital signature (optional)**: draw your signature on the screen or take a photo of it (Setup → My signature). **Sign** puts it on *Signature* (prepared by). A drawn signature travels in the QR to the RE; the RE taps **Sign** or **Sign all as RE** in HQ submission to sign under *Verified by (RE)*, with the RE's name and status. PDF and Excel both carry the signatures.
 - **Photocopier scans**: each printed sheet has a small page ID (QR and text) under the form. Add the photocopier's scan PDF in HQ submission and the app reads the ID on every page (turned pages too), so the cover page lists whose timesheet is on which page. Pages without an ID can be matched to the team list order. Missing timesheets are flagged.
 - **Cover page** no longer has signature boxes: it is generated digitally and says so.
 - **Month-end steps** strip at the top: Fill → Print → Sign → Submit, each tappable.
@@ -64,7 +77,7 @@ Versions before 1.0.0 are for testing. 1.0.0 will be the first public release.
 - **HQ submission** reordered: **1 · Team timesheets** (scan everyone's QR, print all for signature) then **2 · Signed copies for HQ**.
 - **Preview** for the team timesheets and for the HQ PDF before making it.
 - **Cover page** in a proper format: letterhead, submission details, list of timesheets with designation, hours, OT, pages and page numbers, totals, sign-off boxes (compiled by, checked by, received by HQ), and a footer with the app QR and "generated by". Every page of the HQ PDF is numbered.
-- **Signature block**: *Verified by PYKP* (RE) now sits beside the SOR, each with signature line, name, title and date; the employee signs above. The original stacked layout is still available in Setup. RE and SOR names can be set in Setup (blank prints NAME : …… to write by hand).
+- **Signature block**: *Verified by (RE)* now sits beside the SOR, each with signature line, name, title and date; the employee signs above. The original stacked layout is still available in Setup. RE and SOR names can be set in Setup (blank prints NAME : …… to write by hand).
 - **Send feedback on WhatsApp** in Setup and at the bottom of the main screen, with the app version and phone type filled in.
 
 ## v0.9.0 beta – 14 October 2026
